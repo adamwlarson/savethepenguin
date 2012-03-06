@@ -2,7 +2,7 @@ package
 {
 	public class Level
 	{
-		public var _running:Boolean = false;
+		private var _running:Boolean = false;
 		
 		public function Level()
 		{
