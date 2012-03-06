@@ -14,12 +14,17 @@ package
 			super.Initialize( engine );
 			
 			testModel = new AnimatedModel( );
-			testModel.LoadModel( "Assets/panda3.dae", engine, function( ):void {
+			testModel.LoadModelMD2( "Assets/panda.md2", engine, function( ):void {
 				trace( "Success Loading" );
 				DoneLoading();
-				testModel.AddAnimation("Walk", 0, 0.5, true );
+				//testModel.AddAnimation("Walk", 0, 0.5, true );
 				testModel.PlayAnimation("default");
 				engine.Render();
+			});
+			
+			var staticModel:StaticModel = new StaticModel( );
+			staticModel.LoadOBJ( "Assets/001.obj", engine, function( ):void {
+				trace( "Success Loading Static Mesh" );
 			});
 		}
 		
