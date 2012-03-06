@@ -25,7 +25,7 @@ package
 			_scene = new Scene3D();
 			
 			//Create a new camera, this will need to be moved to its own class at some point
-			_camera = new Camera3D({zoom:2, focus:200, x:0, y:0, z:-30});
+			_camera = new Camera3D({zoom:20, focus:30, x:0, y:5000, z:-9000});
 			
 			//Create a new view
 			_view = new View3D({scene:_scene, camera:_camera});

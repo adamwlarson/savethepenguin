@@ -4,10 +4,12 @@ package
 	import away3d.animators.BonesAnimator;
 	import away3d.containers.ObjectContainer3D;
 	import away3d.containers.Scene3D;
+	import away3d.core.base.Mesh;
 	import away3d.core.utils.Cast;
 	import away3d.events.Loader3DEvent;
 	import away3d.loaders.*;
 	import away3d.loaders.Loader3D;
+	import away3d.loaders.Md2;
 	import away3d.loaders.Obj;
 	import away3d.loaders.data.AnimationData;
 	import away3d.materials.*;
@@ -22,22 +24,41 @@ package
 		private var _loader:Loader3D;
 		private var _loaded:Boolean = false;
 		private var _func:Function;
+		private var _mesh:Mesh;
 		
 		public function AnimatedModel()
 		{
 			
 		}
 		
-		public function LoadModel( src:String, engine:Engine, func:Function ):void
+		public function LoadModelDAE( src:String, engine:Engine, func:Function ):void
 		{
 			_func = func;
 			var mat: ColorMaterial = new ColorMaterial( 0xFFFF0000 );
-			_loader = Collada.load( src, {/*material: mat,*/ x:0, y:0, z:0} );
-			_loader.scaleX = _loader.scaleY = _loader.scaleZ = 1;
+			_loader = Collada.load( src );
 			_loader.autoLoadTextures = false;
+			
+			//Listeners
 			_loader.addEventListener(Loader3DEvent.LOAD_SUCCESS, Loaded);
 			_loader.addOnError(Error);
 			_loader.addOnProgress(Loading);
+			
+			_loader.material = mat; 
+			engine.AddChild(_loader);
+		}
+		
+		public function LoadModelMD2( src:String, engine:Engine, func:Function ):void
+		{
+			_func = func;
+			var mat: ColorMaterial = new ColorMaterial( 0xFFFF0000 );
+			_loader = Md2.load( src );
+			_loader.autoLoadTextures = false;
+			
+			//Listeners
+			_loader.addEventListener(Loader3DEvent.LOAD_SUCCESS, Loaded);
+			_loader.addOnError(Error);
+			_loader.addOnProgress(Loading);
+			
 			_loader.material = mat; 
 			engine.AddChild(_loader);
 		}
@@ -65,6 +86,7 @@ package
 		{
 			_func();
 			_loaded = true;
+			_mesh = event.loader.handle as Mesh;
 		}
 		
 		protected function Loading( event:Loader3DEvent ):void
