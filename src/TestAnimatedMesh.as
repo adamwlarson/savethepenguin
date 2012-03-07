@@ -1,11 +1,13 @@
 package
 {
+	import flare.core.Pivot3D;
+	
 	import flash.events.Event;
 	
 	public final class TestAnimatedMesh extends Level
 	{
-		private var testModel:AnimatedModel;
-		
+		private var _testModel:AnimatedModel;
+				
 		public function TestAnimatedMesh()
 		{
 			super();
@@ -15,28 +17,33 @@ package
 		{
 			super.Initialize( engine );
 			
-			engine.SetLoadedCallback(Loaded);
-			testModel = new AnimatedModel( );
-			testModel.LoadModelF3D( "Assets/model.f3d", engine );
+			_testModel = new AnimatedModel( );
 			
-			/*var staticModel:StaticModel = new StaticModel( );
-			staticModel.LoadOBJ( "Assets/001.obj", engine, function( ):void {
-			trace( "Success Loading Static Mesh" );
-			});*/
+			engine.SetLoadedCallback( Loaded );
+			engine.LoadModel("Assets/model.f3d");
+			engine.LoadModel("Assets/TilePiece01.f3d");
+			
 		}
 		
 		//Called when all evel assets are loaded
 		public function Loaded(e:Event ):void
 		{
 			trace( "Success Loading" );
+			
+			_testModel.GetModel("model.f3d", _engine );
+			
+			_testModel.AddAnimation("Walk", 30, 48, true );
+			_testModel.PlayAnimation("Walk", 0);
+			
 			DoneLoading();
-			testModel.AddAnimation("Walk", 30, 48, true );
-			testModel.PlayAnimation("Walk", 0);
 		}
 		
 		public override function Update( ):void
 		{
-			testModel.Rotate(1.0);
+			if( IsLoading() ) // do nothing till done loading
+				return;
+			
+			_testModel.SetRotation( 0, 0, 0);
 		}
 		
 	}

@@ -11,7 +11,7 @@ package
 	public class CatchAPenguin extends Base
 	{
 		private var _engine:Engine;
-		private var _level:TestAnimatedMesh;
+		private var _level:Level;
 		private var _gameBoard:Board;
 		
 		public function CatchAPenguin()
@@ -40,7 +40,7 @@ package
 					onStartUp: function():void // handler
 					{
 						//Create a new scene pass in the engine
-						_level = new TestAnimatedMesh( );
+						_level = new GameLevel( );
 						_level.Initialize(_engine);
 					}
 				}

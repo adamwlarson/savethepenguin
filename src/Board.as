@@ -3,18 +3,21 @@ package
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	
-	public class Board extends Level
+	public class Board
 	{
 		private var _grid:Array;
 		private var _tileList:Array;
 		private var _boardWidth:int;
 		private var _boardHeight:int;
 		private var _boardMax:int;
-		private var _ed:EventDispatcher = new EventDispatcher();
+		
+		public var ed:EventDispatcher = new EventDispatcher();
 		
 
-		public function Board( engine:Engine, h:int, w:int, radius:int )
+		public function Board( engine:Engine, h:int, w:int )
 		{
+			var radius:int = 55; // TODO find a way to get size from the model?
+			
 			_boardWidth = w;
 			_boardHeight = h;
 			_boardMax = w*h;
@@ -35,9 +38,9 @@ package
 			// hexagon offset
 			tileHeight -= radius - (0.5/*cos(60)*/*radius);
 			
-			tileHeight+=4; // boarder around tiles
-			halfWidth+=2;
-			tileWidth+=4;
+			/*tileHeight+=2; // boarder around tiles
+			halfWidth+=1;
+			tileWidth+=2;*/
 			
 			// make the grid
 			_grid = new Array();			
@@ -53,17 +56,21 @@ package
 				xOffset = startingX;
 				xOffset += (y%2)? halfWidth:0;
 				
+				
+					
 				for( x = 0; x < _boardWidth; x++ )
 				{	
 					data.x = x;
 					data.y = y;
 
-					_grid[x][y] = new Tile( engine, xOffset, yOffset, data, radius );
+					_grid[x][y] = new Tile( engine, xOffset, yOffset, data );
 					
 					tile = _grid[x][y];
 					tile.ed.addEventListener( "Touched", function( event:Event ):void {
 						// tile was touched
 						// message up
+						ed.dispatchEvent(new Event( "PlayerDone", false) );
+					
 					});
 					
 					// set path links

@@ -1,19 +1,10 @@
 package
-{	
-	import flare.core.Texture3D;
-	import flare.materials.Material3D;
-	import flare.materials.Shader3D;
-	import flare.materials.filters.TextureFilter;
-	import flare.primitives.Plane;
-		
-	import flash.display.BitmapData;
+{			
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
-	import flash.geom.Vector3D;
+	import flare.events.MouseEvent3D;	
 	
-	import flashx.textLayout.conversion.PlainTextExporter;
-	
-	public class Tile// extends StaticModel
+	public class Tile
 	{
 		static private var _count:int = 0; // debug
 		
@@ -23,55 +14,36 @@ package
 		public var southEast:Tile = null;
 		public var southWest:Tile = null;
 		public var west:Tile = null;
-		public var ed:EventDispatcher = new EventDispatcher(); // TODO make public raper function, not the best way?
-		public var fsm:FiniteStateMachine; // not the best way?
+		public var ed:EventDispatcher = new EventDispatcher(); // TODO make public wrapper function, not the best way?
+		public var fsm:FiniteStateMachine;// TODO not the best way? should this be pulic
 		
 		private var _data:Object = null;
 		private var _open:Boolean = true;
 		private var _visited:int = 0;
 		
-		private var _model:StaticModel = new StaticModel();
+		private var _model:StaticModel = new StaticModel();		
 		
-		///// TEMP////////////////////////////////////////////////////////////////////////////////
-		/*static private var _unSelected:Shader3D = new Shader3D("test1");
-		static private var _selected:Shader3D = new Shader3D("test2");
-		private var _polygon:Plane;*/
-		///// TEMP////////////////////////////////////////////////////////////////////////////////
-		
-		public function Tile( engine:Engine, xPos:int, yPos:int, data:Object=null, radius:int=60 )
+		public function Tile( engine:Engine, xPos:int, yPos:int, data:Object=null )
 		{
 			_count++; // debug count for tiles
-			///// TEMP////////////////////////////////////////////////////////////////////////////////
-			/*var bmp1:BitmapData = new BitmapData( 1, 1, false, 0x0000FF ); // just for test, but this is making a new bitmap for each tile and overwriting my static var BAD!
-			var bmp2:BitmapData = new BitmapData( 1, 1, false, 0xFF0000 );
+						
+			_model.GetModel( "TilePiece01.f3d", engine );			
+			_model.SetPosition( xPos, 0, yPos );	
 			
-			_unSelected = new Shader3D( "Basic" );
-			_unSelected.filters.push( new TextureFilter( new Texture3D(bmp1) ) );
-			_unSelected.build();
-			
-			_selected = new Shader3D( "Basic" );
-			_selected.filters.push( new TextureFilter( new Texture3D(bmp2) ) );
-			_selected.build();
-			
-			_polygon = new Plane("tile", radius*2, radius*2, 1, _unSelected, "+xz");
-			engine.view.addChild( _polygon );
-			
-			//_polygon.setMaterial( _selected );
-			
-			_polygon.x = xPos;
-			_polygon.z = yPos;*/
-			///// TEMP////////////////////////////////////////////////////////////////////////////////
-			
-			_model.LoadOBJ("Assets/TilePiece01.f3d", engine, function():void {
-				//trace("done");
-				//_model._mesh.setScale( 0.50, 0.50, 0.50 );
-				_model._mesh.x = xPos;
-				_model._mesh.y = 0;
-				_model._mesh.z = yPos;
-				trace("x: " + xPos + ", y: " + yPos );
-				
+			_model.AddMouseOverEvent( function ( event:MouseEvent3D ):void
+			{
+				fsm.Fire("onMouseOver");
+			});
+					
+			_model.AddMouseOutEvent( function( event:MouseEvent3D ):void
+			{
+				fsm.Fire("onMouseOut");				
 			});
 			
+			_model.AddMouseClickEvent( function( event:MouseEvent3D ):void
+			{
+				fsm.Fire("onMouseClick");	
+			});
 			
 			_data = data; // tile specific data, TODO move directional data here
 			
@@ -81,6 +53,7 @@ package
 					{
 						onStartUp: function():Object // handler
 						{
+							_model.SetTexture("Assets/IcePiece.jpg");
 							_visited = 0;
 							_open = true;
 							return fsm.States.Enable;
@@ -94,21 +67,17 @@ package
 						},
 						onMouseOut: function():void
 						{
-
+							_model.SetTexture("Assets/IcePiece.jpg");							
 						},
 						onMouseOver: function():void
 						{
-							
-						},
-						onMouseOver: function():void
-						{
-							
+							_model.SetTexture("Assets/Tile_Select.jpg");
 						},
 						onMouseClick: function():Object
 						{
 							// fire event
 							ed.dispatchEvent(new Event( "Touched", false));
-							return fsm.States.TileBlocked;
+							return fsm.States.TileUsed;
 						},
 						onDisable: function():Object
 						{
@@ -138,11 +107,12 @@ package
 							return fsm.States.Init;
 						}
 					},
-					/*TileUsed: // state
+					TileUsed: // state
 					{
 						onStartUp: function():void // handler
 						{
-							
+							_open = false;
+							_model.SetTexture("Assets/Tile_break_Lv5.jpg");
 						},
 						onClear: function():Object
 						{
@@ -151,44 +121,34 @@ package
 						onReset: function():Object
 						{
 							return fsm.States.Init;
+						},
+						onFade: function():void
+						{
+							_model.SetTexture("Assets/Tile_break_Lv1.jpg");
 						}
 						
-					},*/
+					},
 					TileBlocked: // state
 					{
 						onStartUp: function():void // handler
 						{
 							_open = false;
+							_model.SetTexture("Assets/Tile_Block.jpg");
+							
 						},
 						onClear: function():Object
 						{
 							return fsm.States.Enable;
-						},
-						onFade: function():void
-						{
-							
 						},
 						onReset: function():Object
 						{
 							return fsm.States.Init;
 						}
 					}
-				});
-			
-			/*polygon.addOnMouseOut( function( event:MouseEvent3D ):void {
-				fsm.Fire("onMouseOut");				
-			});
-			polygon.addOnMouseOver( function( event:MouseEvent3D ):void {
-				fsm.Fire("onMouseOver");
-				//trace( polygon.position.x + ", " + polygon.position.y + ", " + polygon.position.z );				
-			});
-			polygon.addOnMouseDown( function( event:MouseEvent3D ):void {					
-				fsm.Fire("onMouseClick");
-				//trace( "click" );				
-			});*/
+				});			
 
 			fsm.Start();
-			trace( _count );			
+			//trace( _count );			
 		}		
 		public function isOpen():Boolean
 		{
