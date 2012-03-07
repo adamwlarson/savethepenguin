@@ -11,7 +11,7 @@ package
 	public class CatchAPenguin extends Base
 	{
 		private var _engine:Engine;
-		private var _level:TestAnimatedMesh;
+		private var _level:Level;
 		private var _gameBoard:Board;
 		
 		public function CatchAPenguin()
@@ -40,8 +40,8 @@ package
 					onStartUp: function():void // handler
 					{
 						//Create a new scene pass in the engine
-						_level = new TestAnimatedMesh( );
-						_level.Initialize(_engine);	
+						_level = new GameLevel( );
+						_level.Initialize(_engine);
 					}
 				}
 			});
@@ -49,10 +49,10 @@ package
 			fsm.Start();
 			
 			// Initialise Event loop
-			this.addEventListener(Event.ENTER_FRAME, loop);   
+			this.addEventListener(Event.ENTER_FRAME, loop);
 		}
 		
-		private function loop(event:Event):void 
+		private function loop(event:Event):void
 		{
 			_level.Update( );
 			// Render the 3D scene

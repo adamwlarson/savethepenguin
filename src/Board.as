@@ -9,12 +9,18 @@ package
 		private var _tileList:Array;
 		private var _boardWidth:int;
 		private var _boardHeight:int;
-		private var _ed:EventDispatcher = new EventDispatcher();
+		private var _boardMax:int;
 		
-		public function Board( h:int, w:int, radius:int )
+		public var ed:EventDispatcher = new EventDispatcher();
+		
+
+		public function Board( engine:Engine, h:int, w:int )
 		{
+			var radius:int = 55; // TODO find a way to get size from the model?
+			
 			_boardWidth = w;
 			_boardHeight = h;
+			_boardMax = w*h;
 			
 			var tileWidth:int = 0.866/*sin(60)*/*radius*2;
 			var tileHeight:int = radius*2;
@@ -32,9 +38,9 @@ package
 			// hexagon offset
 			tileHeight -= radius - (0.5/*cos(60)*/*radius);
 			
-			tileHeight+=1; // boarder around tiles
+			/*tileHeight+=2; // boarder around tiles
 			halfWidth+=1;
-			tileWidth+=2;
+			tileWidth+=2;*/
 			
 			// make the grid
 			_grid = new Array();			
@@ -50,16 +56,21 @@ package
 				xOffset = startingX;
 				xOffset += (y%2)? halfWidth:0;
 				
+				
+					
 				for( x = 0; x < _boardWidth; x++ )
 				{	
 					data.x = x;
 					data.y = y;
-					//_grid[x][y] = new Tile( scene, xOffset, yOffset, data, radius );
+
+					_grid[x][y] = new Tile( engine, xOffset, yOffset, data );
 					
 					tile = _grid[x][y];
 					tile.ed.addEventListener( "Touched", function( event:Event ):void {
 						// tile was touched
 						// message up
+						ed.dispatchEvent(new Event( "PlayerDone", false) );
+					
 					});
 					
 					// set path links
@@ -96,7 +107,7 @@ package
 			{
 				for( var x:int = 0; x < _boardWidth; x++ )
 				{	
-					_grid[x][y].fsm.fire( command );
+					_grid[x][y].fsm.Fire( command );
 				}
 			}				
 		}
@@ -105,6 +116,11 @@ package
 			var x:int;
 			var y:int;
 			var tile:Tile;
+			
+			if( blocked >= _boardMax )
+			{
+				blocked = _boardMax-1;
+			}
 			
 			while( blocked >= 0 )
 			{
@@ -136,7 +152,7 @@ package
 				}
 			}
 		}
-		public function CalculatePath( startTile:Tile ):Tile // returns next ideal tile to get off the board
+		public function CalculatePath( startTile:Tile, endTile:Tile=null ):Tile // returns next ideal tile to get to endTile
 		{
 			var dist:int = 1;
 			var index:int = 0;
@@ -157,7 +173,7 @@ package
 				while( index < pathList.length ) {
 					
 					startTile = pathList[index];
-					if( pathList[index].onCheckPath( null ) ) // end found
+					if( pathList[index].onCheckPath( endTile ) ) // end found
 					{
 						newList.splice( 0, newList.length );
 						break;

@@ -1,16 +1,12 @@
 package
-{	
+{			
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
-	import flash.geom.Vector3D;
+	import flare.events.MouseEvent3D;	
 	
 	public class Tile
 	{
 		static private var _count:int = 0; // debug
-		
-		//static private var _matUnselected:ColorMaterial = new ColorMaterial( 0x0000FF );
-		//static private var _matSelected:ColorMaterial = new ColorMaterial(  0x000000 );
-		//static private var _matBlocked:ColorMaterial = new ColorMaterial(  0xFF0000 );
 		
 		public var northWest:Tile = null; // TODO make gets for these public directions
 		public var northEast:Tile = null;
@@ -18,21 +14,38 @@ package
 		public var southEast:Tile = null;
 		public var southWest:Tile = null;
 		public var west:Tile = null;
+		public var ed:EventDispatcher = new EventDispatcher(); // TODO make public wrapper function, not the best way?
+		public var fsm:FiniteStateMachine;// TODO not the best way? should this be pulic
+		
 		private var _data:Object = null;
 		private var _open:Boolean = true;
 		private var _visited:int = 0;
-		public var ed:EventDispatcher = new EventDispatcher(); // TODO make public raper function, not the best way?
-		public var fsm:FiniteStateMachine; // not the best way?
 		
-		public function Tile( xPos:int, yPos:int, data:Object=null, radius:int=60 )
+		private var _model:StaticModel = new StaticModel();		
+		
+		public function Tile( engine:Engine, xPos:int, yPos:int, data:Object=null )
 		{
 			_count++; // debug count for tiles
+						
+			_model.GetModel( "TilePiece01.f3d", engine );			
+			_model.SetPosition( xPos, 0, yPos );	
+			
+			_model.AddMouseOverEvent( function ( event:MouseEvent3D ):void
+			{
+				fsm.Fire("onMouseOver");
+			});
+					
+			_model.AddMouseOutEvent( function( event:MouseEvent3D ):void
+			{
+				fsm.Fire("onMouseOut");				
+			});
+			
+			_model.AddMouseClickEvent( function( event:MouseEvent3D ):void
+			{
+				fsm.Fire("onMouseClick");	
+			});
 			
 			_data = data; // tile specific data, TODO move directional data here
-			
-			//var polygon:RegularPolygon = new RegularPolygon({ radius:radius, sides: 6 });
-			//polygon.rotationY = 90;
-			//polygon.position = new Vector3D( xPos-(radius>>1), 0, yPos+(radius>>1));
 			
 			fsm = new FiniteStateMachine(
 				{
@@ -40,9 +53,7 @@ package
 					{
 						onStartUp: function():Object // handler
 						{
-							//polygon.material = _matUnselected;
-							//polygon.ownCanvas = true;
-							//polygon.alpha = 1.00;
+							_model.SetTexture("Assets/IcePiece.jpg");
 							_visited = 0;
 							_open = true;
 							return fsm.States.Enable;
@@ -56,17 +67,17 @@ package
 						},
 						onMouseOut: function():void
 						{
-							//polygon.material = _matUnselected;
+							_model.SetTexture("Assets/IcePiece.jpg");							
 						},
 						onMouseOver: function():void
 						{
-							//polygon.material = _matSelected;
+							_model.SetTexture("Assets/Tile_Select.jpg");
 						},
 						onMouseClick: function():Object
 						{
 							// fire event
 							ed.dispatchEvent(new Event( "Touched", false));
-							return fsm.States.TileBlocked;
+							return fsm.States.TileUsed;
 						},
 						onDisable: function():Object
 						{
@@ -96,10 +107,33 @@ package
 							return fsm.States.Init;
 						}
 					},
-					/*TileUsed: // state
+					TileUsed: // state
 					{
 						onStartUp: function():void // handler
 						{
+							_open = false;
+							_model.SetTexture("Assets/Tile_break_Lv5.jpg");
+						},
+						onClear: function():Object
+						{
+							return fsm.States.Enable;
+						},
+						onReset: function():Object
+						{
+							return fsm.States.Init;
+						},
+						onFade: function():void
+						{
+							_model.SetTexture("Assets/Tile_break_Lv1.jpg");
+						}
+						
+					},
+					TileBlocked: // state
+					{
+						onStartUp: function():void // handler
+						{
+							_open = false;
+							_model.SetTexture("Assets/Tile_Block.jpg");
 							
 						},
 						onClear: function():Object
@@ -110,45 +144,11 @@ package
 						{
 							return fsm.States.Init;
 						}
-						
-					},*/
-					TileBlocked: // state
-					{
-						onStartUp: function():void // handler
-						{
-							_open = false;
-							//polygon.material = _matBlocked;
-						},
-						onClear: function():Object
-						{
-							return fsm.States.Enable;
-						},
-						onFade: function():void
-						{
-							//polygon.alpha =polygon.alpha-0.10;
-						},
-						onReset: function():Object
-						{
-							return fsm.States.Init;
-						}
 					}
-				});
-			
-			/*polygon.addOnMouseOut( function( event:MouseEvent3D ):void {
-				fsm.Fire("onMouseOut");				
-			});
-			polygon.addOnMouseOver( function( event:MouseEvent3D ):void {
-				fsm.Fire("onMouseOver");
-				//trace( polygon.position.x + ", " + polygon.position.y + ", " + polygon.position.z );				
-			});
-			polygon.addOnMouseDown( function( event:MouseEvent3D ):void {					
-				fsm.Fire("onMouseClick");
-				//trace( "click" );				
-			});			
-			
-			scene.addChild(polygon);*/
+				});			
+
 			fsm.Start();
-			//trace( count );			
+			//trace( _count );			
 		}		
 		public function isOpen():Boolean
 		{
