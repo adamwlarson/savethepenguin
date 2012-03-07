@@ -1,5 +1,8 @@
 package
 {
+	import flare.basic.Scene3D;
+	import flare.basic.Viewer3D;
+	
 	import flash.display.*;
 	import flash.display.Sprite;
 	import flash.events.Event;
@@ -13,9 +16,10 @@ package
 		
 		public function CatchAPenguin()
 		{
+			var me:DisplayObjectContainer = this;
 			// set up the stage
-			stage.align = StageAlign.TOP_LEFT;
 			stage.scaleMode = StageScaleMode.NO_SCALE;
+			stage.align = StageAlign.TOP_LEFT;
 			stage.width;
 			stage.height;
 			
@@ -26,7 +30,7 @@ package
 					{
 						//Create a new engine
 						_engine = new Engine();
-						//addChild( _engine.Initialize(800, 600) );
+						_engine.Initialize(me, 800, 600);
 						
 						return fsm.States.Loading;
 					}
@@ -38,7 +42,6 @@ package
 						//Create a new scene pass in the engine
 						_level = new TestAnimatedMesh( );
 						_level.Initialize(_engine);	
-						//_gameBoard = new Board( _engine.GetScene(), 11, 11, 20 );
 					}
 				}
 			});

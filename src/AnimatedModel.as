@@ -1,6 +1,10 @@
 package
 {
 
+	import flare.core.Label3D;
+	import flare.core.Pivot3D;
+	
+	import flash.display.DisplayObjectContainer;
 	import flash.events.Event;
 	
 	import flashx.textLayout.formats.Float;
@@ -10,15 +14,15 @@ package
 	{
 		private var _loaded:Boolean = false;
 		private var _func:Function;
+		private var _obj:Pivot3D;
 		
 		public function AnimatedModel()
 		{
-			
 		}
 		
-		public function LoadModelDAE( src:String, engine:Engine, func:Function ):void
+		public function LoadModelF3D( src:String, engine:Engine ):void
 		{
-			_func = func;
+			_obj = engine.GetScene().addChildFromFile(src);
 		}
 		
 		public function LoadModelMD2( src:String, engine:Engine, func:Function ):void
@@ -26,14 +30,14 @@ package
 			_func = func;
 		}
 		
-		public function PlayAnimation( src:String ):void
+		public function PlayAnimation( src:String, blend:int ):void
 		{
-			
+			_obj.gotoAndPlay( src, blend );
 		}
 		
 		public function AddAnimation( src:String, start:Number, end:Number, loop:Boolean ):void
 		{
-			
+			_obj.addLabel( new Label3D( src, start, end ) );
 		}
 		
 		public function Rotate( num:Number ):void
