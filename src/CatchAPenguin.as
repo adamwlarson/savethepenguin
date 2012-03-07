@@ -33,17 +33,41 @@ package
 				},
 				Loading:
 				{
-					onStartUp: function():void // handler
+					onStartUp: function():Object // handler
 					{
 						//Create a new scene pass in the engine
-						_level = new TestAnimatedMesh( );
-						_level.Initialize(_engine);	
-						_gameBoard = new Board( _engine.GetScene(), 11, 11, 20 );
+						/*_level = new TestAnimatedMesh( );
+						_level.Initialize(_engine);*/	
+						_gameBoard = new Board( _engine, 11, 11, 20 );
+						//_gameBoard.MakeRandomBoard( 35 );
+						
+						return fsm.States.GamePlayerTurn;
 					}
-				}
+				},
+				GamePlayerTurn:
+				{
+					onStartUp: function():void // handler
+					{
+						_gameBoard.CommandAllTiles( "onEnable" );
+					}	
+				},
+				GameAiTurn:
+				{
+					onStartUp: function():void // handler
+					{
+						_gameBoard.CommandAllTiles( "onDisable" );
+					}
+				},
+				GameEnd:
+				{
+					onStartUp: function():void // handler
+					{
+						_gameBoard.CommandAllTiles( "onDisable" );
+					}	
+				}				
 			});
 			
-			fsm.Start();
+			fsm.Start(); // start the state machine
 			
 			// Initialise Event loop
 			this.addEventListener(Event.ENTER_FRAME, loop);   
@@ -51,7 +75,7 @@ package
 		
 		private function loop(event:Event):void 
 		{
-			_level.Update( );
+			//_level.Update( );
 			// Render the 3D scene
 			_engine.Render();
 			

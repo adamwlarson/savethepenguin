@@ -22,10 +22,10 @@ package
 				engine.Render();
 			});
 			
-			var staticModel:StaticModel = new StaticModel( );
+			/*var staticModel:StaticModel = new StaticModel( );
 			staticModel.LoadOBJ( "Assets/001.obj", engine, function( ):void {
 				trace( "Success Loading Static Mesh" );
-			});
+			});*/
 		}
 		
 		public override function Update( ):void

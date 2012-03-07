@@ -2,20 +2,23 @@ package
 {
 	import away3d.containers.Scene3D;
 	import away3d.events.MouseEvent3D;
+	import away3d.loaders.Loader3D;
 	import away3d.materials.*;
 	import away3d.primitives.*;
+	import away3d.core.base.Face;
+	
 	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.geom.Vector3D;
 	
-	public class Tile
+	public class Tile extends StaticModel
 	{
 		static private var _count:int = 0; // debug
 		
-		static private var _matUnselected:ColorMaterial = new ColorMaterial( 0x0000FF );
-		static private var _matSelected:ColorMaterial = new ColorMaterial(  0x000000 );
-		static private var _matBlocked:ColorMaterial = new ColorMaterial(  0xFF0000 );
+		static private var _matUnselected:WireColorMaterial  = new WireColorMaterial ( 0x0000FF );
+		static private var _matSelected:WireColorMaterial  = new WireColorMaterial (  0x000000 );
+		static private var _matBlocked:WireColorMaterial  = new WireColorMaterial (  0xFF0000 );
 		
 		public var northWest:Tile = null; // TODO make gets for these public directions
 		public var northEast:Tile = null;
@@ -29,26 +32,84 @@ package
 		public var ed:EventDispatcher = new EventDispatcher(); // TODO make public raper function, not the best way?
 		public var fsm:FiniteStateMachine; // not the best way?
 		
-		public function Tile( scene:Scene3D, xPos:int, yPos:int, data:Object=null, radius:int=60 )
+		public function Tile( engine:Engine, xPos:int, yPos:int, data:Object=null, radius:int=60 )
 		{
 			_count++; // debug count for tiles
 			
 			_data = data; // tile specific data, TODO move directional data here
 			
-			var polygon:RegularPolygon = new RegularPolygon({ radius:radius, sides: 6 });
+			trace("start loaded tile");	
+			LoadOBJ( "Assets/Tile_Piece01.obj", engine, function( ):void {
+				// callback
+				
+				
+				//this._mesh.material = _matUnselected;
+				this._mesh.mouseEnabled = true;
+				
+				this._mesh.addOnMouseOut( function( event:MouseEvent3D ):void {
+					fsm.Fire("onMouseOut");				
+				});
+				this._mesh.addOnMouseOver( function( event:MouseEvent3D ):void {
+					fsm.Fire("onMouseOver");
+					
+					//trace( position.x + ", " + position.y + ", " + position.z );				
+				});
+				this._mesh.addOnMouseDown( function( event:MouseEvent3D ):void {					
+					fsm.Fire("onMouseClick");
+					trace( "click" );				
+				});	
+
+				
+				for( var i:int = 0; i < this._mesh.elements.length; i++)
+				{
+					this._mesh.elements[i].material = _matUnselected;
+				}
+				
+				/*engine.GetScene().removeChild(this);
+				_matUnselected.alpha = 1;
+				_matUnselected.wireColor = 0x0000FF;
+				_matUnselected.wireAlpha = 1;
+				_matUnselected.thickness = 1;
+				material = _matUnselected;
+				engine.GetScene().addChild(this);
+				*/
+			/*for( var i:int = 0; i < this.children.length; i++)
+				{
+					trace( this.children[i].name );
+				}
+				*/
+				
+				//_mesh.material
+				//_mesh.material = _matUnselected;
+				//_mesh.updateMesh( engine.GetView() );
+				//engine.Render();
+				//ownCanvas = true;							
+				//alpha = 1.00;
+				
+				//trace("loaded tile");
+			});
+			
+			//scale( 0.38 );
+			_loader.x = xPos;
+			_loader.z = yPos;
+			_loader.scale( 0.38 );
+			//position = new Vector3D( xPos, 0, yPos );
+			
+			/*var polygon:RegularPolygon = new RegularPolygon({ radius:radius, sides: 6 });
 			polygon.rotationY = 90;
 			polygon.position = new Vector3D( xPos-(radius>>1), 0, yPos+(radius>>1));
-			
+			*/
+			var me:Tile = this;
 			fsm = new FiniteStateMachine(
 				{
 					Init: // state
 					{
 						onStartUp: function():Object // handler
 						{
-							polygon.material = _matUnselected;
-							polygon.ownCanvas = true;
-							polygon.alpha = 1.00;
+							//material = _matUnselected;
 							_visited = 0;
+							
+							
 							_open = true;
 							return fsm.States.Enable;
 						}
@@ -61,11 +122,29 @@ package
 						},
 						onMouseOut: function():void
 						{
-							polygon.material = _matUnselected;
+							if( me._mesh )
+							{
+								for( var i:int = 0; i < me._mesh.elements.length; i++)
+								{
+									if( me._mesh.elements ){
+										(Face)(me._mesh.elements[i]).material = _matUnselected;
+									}
+								}
+							}
+							//material = _matUnselected;
 						},
 						onMouseOver: function():void
 						{
-							polygon.material = _matSelected;
+							if( me._mesh )
+							{
+								for( var i:int = 0; i < me._mesh.elements.length; i++)
+								{
+									if( me._mesh.elements ){
+										(Face)(me._mesh.elements[i]).material = _matSelected;
+									}
+								}
+							}
+							//material = _matSelected;
 						},
 						onMouseClick: function():Object
 						{
@@ -122,7 +201,16 @@ package
 						onStartUp: function():void // handler
 						{
 							_open = false;
-							polygon.material = _matBlocked;
+							if( me._mesh )
+							{
+								for( var i:int = 0; i < me._mesh.elements.length; i++)
+								{
+									if( me._mesh.elements ){
+										(Face)(me._mesh.elements[i]).material = _matBlocked;
+									}
+								}
+							}
+							//material = ;
 						},
 						onClear: function():Object
 						{
@@ -130,7 +218,7 @@ package
 						},
 						onFade: function():void
 						{
-							polygon.alpha =polygon.alpha-0.10;
+							//alpha = alpha-0.10;
 						},
 						onReset: function():Object
 						{
@@ -139,19 +227,9 @@ package
 					}
 				});
 			
-			polygon.addOnMouseOut( function( event:MouseEvent3D ):void {
-				fsm.Fire("onMouseOut");				
-			});
-			polygon.addOnMouseOver( function( event:MouseEvent3D ):void {
-				fsm.Fire("onMouseOver");
-				//trace( polygon.position.x + ", " + polygon.position.y + ", " + polygon.position.z );				
-			});
-			polygon.addOnMouseDown( function( event:MouseEvent3D ):void {					
-				fsm.Fire("onMouseClick");
-				//trace( "click" );				
-			});			
 			
-			scene.addChild(polygon);
+			
+			//engine.AddChild(polygon);
 			fsm.Start();
 			//trace( count );			
 		}		

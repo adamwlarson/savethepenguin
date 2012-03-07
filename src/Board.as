@@ -11,12 +11,14 @@ package
 		private var _tileList:Array;
 		private var _boardWidth:int;
 		private var _boardHeight:int;
+		private var _boardMax:int;
 		private var _ed:EventDispatcher = new EventDispatcher();
 		
-		public function Board( scene:Scene3D, h:int, w:int, radius:int )
+		public function Board( engine:Engine, h:int, w:int, radius:int )
 		{
 			_boardWidth = w;
 			_boardHeight = h;
+			_boardMax = w*h;
 			
 			var tileWidth:int = 0.866/*sin(60)*/*radius*2;
 			var tileHeight:int = radius*2;
@@ -56,7 +58,7 @@ package
 				{	
 					data.x = x;
 					data.y = y;
-					_grid[x][y] = new Tile( scene, xOffset, yOffset, data, radius );
+					_grid[x][y] = new Tile( engine, xOffset, yOffset, data, radius );
 					
 					tile = _grid[x][y];
 					tile.ed.addEventListener( "Touched", function( event:Event ):void {
@@ -98,7 +100,7 @@ package
 			{
 				for( var x:int = 0; x < _boardWidth; x++ )
 				{	
-					_grid[x][y].fsm.fire( command );
+					_grid[x][y].fsm.Fire( command );
 				}
 			}				
 		}
@@ -107,6 +109,11 @@ package
 			var x:int;
 			var y:int;
 			var tile:Tile;
+			
+			if( blocked >= _boardMax )
+			{
+				blocked = _boardMax-1;
+			}
 			
 			while( blocked >= 0 )
 			{

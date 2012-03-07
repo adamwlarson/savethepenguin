@@ -5,10 +5,12 @@ package
 	import away3d.loaders.Loader3D;
 	import away3d.loaders.Obj;
 	
-	public class StaticModel
+	import flash.display.Loader;
+	
+	public class StaticModel // check with adam
 	{
-		private var _loader:Loader3D;
-		private var _mesh:Mesh;
+		public var _loader:Loader3D;
+		public var _mesh:Mesh;
 		private var _func:Function;
 		private var _loaded:Boolean = false;
 		
@@ -21,22 +23,27 @@ package
 		{
 			_func = func;
 			_loader = new Loader3D( );
+			//var mat:ColorMaterial = new ColorMaterial( 0x000000 );
 			
 			_loader.addEventListener( Loader3DEvent.LOAD_SUCCESS, Loaded );
 			_loader.addEventListener( Loader3DEvent.LOAD_ERROR, Error );
 			_loader.autoLoadTextures = true;
+			//var max3ds:Max3DS = new Max3DS();
+			//max3ds.centerMeshes = true;
+			//max3ds.material = mat;
 			
-			_loader.loadGeometry(src, new Obj( ) );
-			/*_loader.scaleX = _loader.scaleY = _loader.scaleZ = 1000;*/
-			engine.AddChild(_loader);
+			//_loader.scaleX = _loader.scaleY = _loader.scaleZ = 0.5;
+			_loader.loadGeometry(src, new Obj() );
+			
+			engine.AddChild( _loader );
 		}
 		
 		//Private helper for when the mesh is actually loaded
 		protected function Loaded( event:Loader3DEvent ):void
 		{
-			_func();
 			_loaded = true;
 			_mesh = event.loader.handle as Mesh;
+			_func( );
 		}
 		
 		protected function Loading( event:Loader3DEvent ):void
