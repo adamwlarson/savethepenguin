@@ -1,14 +1,11 @@
 package
 {
-	import flare.basic.*;
+	import flare.basic.Scene3D;
 	import flare.basic.Viewer3D;
-	import flare.core.*;
-	import flare.system.*;
 	
 	import flash.display.*;
-	import flash.events.*;
+	import flash.display.Sprite;
 	import flash.events.Event;
-	
 	
 	[SWF(frameRate=60, width=800, height=600)]
 	public class CatchAPenguin extends Base
@@ -17,22 +14,14 @@ package
 		private var _level:TestAnimatedMesh;
 		private var _gameBoard:Board;
 		
-		private var scene:Viewer3D;
-		
 		public function CatchAPenguin()
 		{
+			var me:DisplayObjectContainer = this;
 			// set up the stage
-			stage.align = StageAlign.TOP_LEFT;
 			stage.scaleMode = StageScaleMode.NO_SCALE;
+			stage.align = StageAlign.TOP_LEFT;
 			stage.width;
 			stage.height;
-			
-			// creates a new 3d scene.
-			scene = new Viewer3D(this);
-			scene.antialias = 2;
-			scene.camera = new Camera3D( "myOwnCamera" );
-			scene.camera.setPosition( 0, 1000, -1000 );
-			scene.camera.lookAt( 0, 0, 0 );
 			
 			var fsm:FiniteStateMachine = new FiniteStateMachine( {
 				Init: // state
@@ -40,8 +29,8 @@ package
 					onStartUp: function():Object // handler
 					{
 						//Create a new engine
-						_engine = new Engine( scene );
-						//addChild( _engine.Initialize(800, 600) );
+						_engine = new Engine();
+						_engine.Initialize(me, 800, 600);
 						
 						return fsm.States.Loading;
 					}
@@ -53,7 +42,6 @@ package
 						//Create a new scene pass in the engine
 						_level = new TestAnimatedMesh( );
 						_level.Initialize(_engine);
-						_gameBoard = new Board( _engine, 11, 11, 10 );
 					}
 				}
 			});
