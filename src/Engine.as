@@ -1,63 +1,36 @@
 package
 {
-	import away3d.cameras.Camera3D;
-	import away3d.containers.Scene3D;
-	import away3d.containers.View3D;
-	import away3d.core.base.Object3D;
+
+	import flare.basic.Viewer3D;
 	
 	import flash.display.*;
 	
 	//Wraps the engine interface into an easy to use and easy to replace class
 	public class Engine
 	{
-		private var _scene:Scene3D;
-		private var _camera:Camera3D;
-		private var _view:View3D;
+		public var view:Viewer3D;
+		public function Engine( view:Viewer3D )
+		{
+			this.view = view;
+		}
 		
-		public function Engine()
+		public function Initialize(x:int, y:int):void
 		{
 			
 		}
 		
-		public function Initialize(x:int, y:int):View3D
+		public function AddChild( ):void
 		{
-			//Create the new scene
-			_scene = new Scene3D();
 			
-			//Create a new camera, this will need to be moved to its own class at some point
-			_camera = new Camera3D({zoom:2, focus:200, x:0, y:50, z:-10});
-			_camera.pitch( 75 );
-			
-			//Create a new view
-			_view = new View3D({scene:_scene, camera:_camera});
-			
-			//Start by centering the viewport
-			_view.x = x/2;
-			_view.y = y/2;
-			return _view;
 		}
 		
-		public function AddChild( displayObj:Object3D ):void
+		public function GetScene( ):void
 		{
-			_scene.addChild( displayObj );
-		}
-		
-		public function GetView( ):View3D
-		{
-			return _view;
-		}
-		
-		public function GetScene( ):Scene3D
-		{
-			return _scene;
 		}
 		
 		public function Render( ):void
 		{
 			
-			//_camera.hover( true );
-			//_camera.update();
-			_view.render( );
 		}
 		
 		

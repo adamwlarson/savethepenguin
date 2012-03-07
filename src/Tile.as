@@ -1,24 +1,21 @@
 package
-{
-	import away3d.containers.Scene3D;
-	import away3d.events.MouseEvent3D;
-	import away3d.loaders.Loader3D;
-	import away3d.materials.*;
-	import away3d.primitives.*;
-	import away3d.core.base.Face;
-	
-	
+{	
+	import flare.core.Texture3D;
+	import flare.materials.Material3D;
+	import flare.materials.Shader3D;
+	import flare.materials.filters.TextureFilter;
+	import flare.primitives.Plane;
+		
+	import flash.display.BitmapData;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.geom.Vector3D;
 	
-	public class Tile extends StaticModel
+	import flashx.textLayout.conversion.PlainTextExporter;
+	
+	public class Tile// extends StaticModel
 	{
 		static private var _count:int = 0; // debug
-		
-		static private var _matUnselected:WireColorMaterial  = new WireColorMaterial ( 0x0000FF );
-		static private var _matSelected:WireColorMaterial  = new WireColorMaterial (  0x000000 );
-		static private var _matBlocked:WireColorMaterial  = new WireColorMaterial (  0xFF0000 );
 		
 		public var northWest:Tile = null; // TODO make gets for these public directions
 		public var northEast:Tile = null;
@@ -26,90 +23,65 @@ package
 		public var southEast:Tile = null;
 		public var southWest:Tile = null;
 		public var west:Tile = null;
+		public var ed:EventDispatcher = new EventDispatcher(); // TODO make public raper function, not the best way?
+		public var fsm:FiniteStateMachine; // not the best way?
+		
 		private var _data:Object = null;
 		private var _open:Boolean = true;
 		private var _visited:int = 0;
-		public var ed:EventDispatcher = new EventDispatcher(); // TODO make public raper function, not the best way?
-		public var fsm:FiniteStateMachine; // not the best way?
+		
+		private var _model:StaticModel = new StaticModel();
+		
+		///// TEMP////////////////////////////////////////////////////////////////////////////////
+		/*static private var _unSelected:Shader3D = new Shader3D("test1");
+		static private var _selected:Shader3D = new Shader3D("test2");
+		private var _polygon:Plane;*/
+		///// TEMP////////////////////////////////////////////////////////////////////////////////
 		
 		public function Tile( engine:Engine, xPos:int, yPos:int, data:Object=null, radius:int=60 )
 		{
 			_count++; // debug count for tiles
+			///// TEMP////////////////////////////////////////////////////////////////////////////////
+			/*var bmp1:BitmapData = new BitmapData( 1, 1, false, 0x0000FF ); // just for test, but this is making a new bitmap for each tile and overwriting my static var BAD!
+			var bmp2:BitmapData = new BitmapData( 1, 1, false, 0xFF0000 );
+			
+			_unSelected = new Shader3D( "Basic" );
+			_unSelected.filters.push( new TextureFilter( new Texture3D(bmp1) ) );
+			_unSelected.build();
+			
+			_selected = new Shader3D( "Basic" );
+			_selected.filters.push( new TextureFilter( new Texture3D(bmp2) ) );
+			_selected.build();
+			
+			_polygon = new Plane("tile", radius*2, radius*2, 1, _unSelected, "+xz");
+			engine.view.addChild( _polygon );
+			
+			//_polygon.setMaterial( _selected );
+			
+			_polygon.x = xPos;
+			_polygon.z = yPos;*/
+			///// TEMP////////////////////////////////////////////////////////////////////////////////
+			
+			_model.LoadOBJ("Assets/TilePiece01.f3d", engine, function():void {
+				//trace("done");
+				//_model._mesh.setScale( 0.50, 0.50, 0.50 );
+				_model._mesh.x = xPos;
+				_model._mesh.y = 0;
+				_model._mesh.z = yPos;
+				trace("x: " + xPos + ", y: " + yPos );
+				
+			});
+			
 			
 			_data = data; // tile specific data, TODO move directional data here
 			
-			trace("start loaded tile");	
-			LoadOBJ( "Assets/Tile_Piece01.obj", engine, function( ):void {
-				// callback
-				
-				
-				//this._mesh.material = _matUnselected;
-				this._mesh.mouseEnabled = true;
-				
-				this._mesh.addOnMouseOut( function( event:MouseEvent3D ):void {
-					fsm.Fire("onMouseOut");				
-				});
-				this._mesh.addOnMouseOver( function( event:MouseEvent3D ):void {
-					fsm.Fire("onMouseOver");
-					
-					//trace( position.x + ", " + position.y + ", " + position.z );				
-				});
-				this._mesh.addOnMouseDown( function( event:MouseEvent3D ):void {					
-					fsm.Fire("onMouseClick");
-					trace( "click" );				
-				});	
-
-				
-				for( var i:int = 0; i < this._mesh.elements.length; i++)
-				{
-					this._mesh.elements[i].material = _matUnselected;
-				}
-				
-				/*engine.GetScene().removeChild(this);
-				_matUnselected.alpha = 1;
-				_matUnselected.wireColor = 0x0000FF;
-				_matUnselected.wireAlpha = 1;
-				_matUnselected.thickness = 1;
-				material = _matUnselected;
-				engine.GetScene().addChild(this);
-				*/
-			/*for( var i:int = 0; i < this.children.length; i++)
-				{
-					trace( this.children[i].name );
-				}
-				*/
-				
-				//_mesh.material
-				//_mesh.material = _matUnselected;
-				//_mesh.updateMesh( engine.GetView() );
-				//engine.Render();
-				//ownCanvas = true;							
-				//alpha = 1.00;
-				
-				//trace("loaded tile");
-			});
-			
-			//scale( 0.38 );
-			_loader.x = xPos;
-			_loader.z = yPos;
-			_loader.scale( 0.38 );
-			//position = new Vector3D( xPos, 0, yPos );
-			
-			/*var polygon:RegularPolygon = new RegularPolygon({ radius:radius, sides: 6 });
-			polygon.rotationY = 90;
-			polygon.position = new Vector3D( xPos-(radius>>1), 0, yPos+(radius>>1));
-			*/
-			var me:Tile = this;
 			fsm = new FiniteStateMachine(
 				{
 					Init: // state
 					{
 						onStartUp: function():Object // handler
 						{
-							//material = _matUnselected;
 							_visited = 0;
-							
-							
 							_open = true;
 							return fsm.States.Enable;
 						}
@@ -122,29 +94,15 @@ package
 						},
 						onMouseOut: function():void
 						{
-							if( me._mesh )
-							{
-								for( var i:int = 0; i < me._mesh.elements.length; i++)
-								{
-									if( me._mesh.elements ){
-										(Face)(me._mesh.elements[i]).material = _matUnselected;
-									}
-								}
-							}
-							//material = _matUnselected;
+
 						},
 						onMouseOver: function():void
 						{
-							if( me._mesh )
-							{
-								for( var i:int = 0; i < me._mesh.elements.length; i++)
-								{
-									if( me._mesh.elements ){
-										(Face)(me._mesh.elements[i]).material = _matSelected;
-									}
-								}
-							}
-							//material = _matSelected;
+							
+						},
+						onMouseOver: function():void
+						{
+							
 						},
 						onMouseClick: function():Object
 						{
@@ -201,16 +159,6 @@ package
 						onStartUp: function():void // handler
 						{
 							_open = false;
-							if( me._mesh )
-							{
-								for( var i:int = 0; i < me._mesh.elements.length; i++)
-								{
-									if( me._mesh.elements ){
-										(Face)(me._mesh.elements[i]).material = _matBlocked;
-									}
-								}
-							}
-							//material = ;
 						},
 						onClear: function():Object
 						{
@@ -218,7 +166,7 @@ package
 						},
 						onFade: function():void
 						{
-							//alpha = alpha-0.10;
+							
 						},
 						onReset: function():Object
 						{
@@ -227,11 +175,20 @@ package
 					}
 				});
 			
-			
-			
-			//engine.AddChild(polygon);
+			/*polygon.addOnMouseOut( function( event:MouseEvent3D ):void {
+				fsm.Fire("onMouseOut");				
+			});
+			polygon.addOnMouseOver( function( event:MouseEvent3D ):void {
+				fsm.Fire("onMouseOver");
+				//trace( polygon.position.x + ", " + polygon.position.y + ", " + polygon.position.z );				
+			});
+			polygon.addOnMouseDown( function( event:MouseEvent3D ):void {					
+				fsm.Fire("onMouseClick");
+				//trace( "click" );				
+			});*/
+
 			fsm.Start();
-			//trace( count );			
+			trace( _count );			
 		}		
 		public function isOpen():Boolean
 		{

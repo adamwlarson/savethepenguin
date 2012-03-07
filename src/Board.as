@@ -1,11 +1,9 @@
 package
 {
-	import away3d.containers.Scene3D;
-	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	
-	public class Board
+	public class Board extends Level
 	{
 		private var _grid:Array;
 		private var _tileList:Array;
@@ -14,6 +12,7 @@ package
 		private var _boardMax:int;
 		private var _ed:EventDispatcher = new EventDispatcher();
 		
+
 		public function Board( engine:Engine, h:int, w:int, radius:int )
 		{
 			_boardWidth = w;
@@ -36,9 +35,9 @@ package
 			// hexagon offset
 			tileHeight -= radius - (0.5/*cos(60)*/*radius);
 			
-			tileHeight+=1; // boarder around tiles
-			halfWidth+=1;
-			tileWidth+=2;
+			tileHeight+=4; // boarder around tiles
+			halfWidth+=2;
+			tileWidth+=4;
 			
 			// make the grid
 			_grid = new Array();			
@@ -58,6 +57,7 @@ package
 				{	
 					data.x = x;
 					data.y = y;
+
 					_grid[x][y] = new Tile( engine, xOffset, yOffset, data, radius );
 					
 					tile = _grid[x][y];
@@ -145,7 +145,7 @@ package
 				}
 			}
 		}
-		public function CalculatePath( startTile:Tile ):Tile // returns next ideal tile to get off the board
+		public function CalculatePath( startTile:Tile, endTile:Tile=null ):Tile // returns next ideal tile to get to endTile
 		{
 			var dist:int = 1;
 			var index:int = 0;
@@ -166,7 +166,7 @@ package
 				while( index < pathList.length ) {
 					
 					startTile = pathList[index];
-					if( pathList[index].onCheckPath( null ) ) // end found
+					if( pathList[index].onCheckPath( endTile ) ) // end found
 					{
 						newList.splice( 0, newList.length );
 						break;
