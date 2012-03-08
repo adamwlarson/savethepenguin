@@ -7,7 +7,7 @@ package
 		// Default States are Init
 		// Default Handlers are onStartUp and onExit
 		
-		private var DefaultStates:Object = 
+		private var _DefaultStates:Object = 
 		{			
 			Init: // state, must have this
 			{
@@ -33,29 +33,29 @@ package
 			}
 		};
 		
-		public var States:Object = DefaultStates;
-		private var CurrentState:Object;
-		private var LastState:Object;
-		private var Started:Boolean = false;
+		public var States:Object = _DefaultStates;
+		private var _CurrentState:Object = null;
+		private var _LastState:Object = null;
+		private var _Started:Boolean = false;
 		
 		public function FiniteStateMachine( states:Object=null )
 		{	
-			if( states == null ) states = DefaultStates;
+			if( states == null ) states = _DefaultStates;
 			this.States = states;			
 		}
 		public function Start( ):void
 		{
-			if( Started ) return; // exit			
-			Started = true;
+			if( _Started ) return; // exit			
+			_Started = true;
 			
 			if( States.propertyIsEnumerable( "Init" ) )
 			{
-				CurrentState = States["Init"];
+				_CurrentState = States["Init"];
 				RunStateHandler( "onStartUp" );
 				return; // exit
 			}
 			
-			//trace("no Init State !!!");
+			trace("no Init State !!!");
 		}
 		public function Fire( handler:String ):void
 		{
@@ -63,7 +63,7 @@ package
 		}		
 		public function GetLastState():Object
 		{
-			return LastState;
+			return _LastState;
 		}
 		//------------------------------------------------------------------------------
 		private function RunStateHandler( handler:String ):Boolean
@@ -72,9 +72,9 @@ package
 			
 			if( result is Object ) // change state
 			{
-				LastState = CurrentState;
+				_LastState = _CurrentState;
 				RunHandler("onExit"); // can't change state onExit
-				CurrentState = result;
+				_CurrentState = result;
 				RunStateHandler("onStartUp"); // run next states startup
 				return true;
 			}
@@ -83,10 +83,16 @@ package
 		}		
 		private function RunHandler( handler:String ):Object
 		{
-			if( !CurrentState.propertyIsEnumerable( handler ))
+			if( _CurrentState == null) 
+			{
+				trace("Make sure you start first");
+				return null;
+			}
+			
+			if( !_CurrentState.propertyIsEnumerable( handler ))
 				return null;
 			
-			return CurrentState[handler]();
+			return _CurrentState[handler]();
 		}		
 	}
 }

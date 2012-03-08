@@ -1,19 +1,12 @@
 package
 {
+	import flare.core.Pivot3D;
 	
-	public class StaticModel
+	public class StaticModel extends Model
 	{
-		private var _func:Function;
-		private var _loaded:Boolean = false;
-		
 		public function StaticModel()
 		{
-		}
-		
-		//Load the Mesh
-		public function LoadOBJ( src:String, engine:Engine, func:Function ):void
-		{
-			_func = func;
-		}
+			super();
+		}		
 	}
 }
