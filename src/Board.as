@@ -54,13 +54,14 @@ package
 			{
 				xOffset = startingX;
 				xOffset += (y%2)? halfWidth:0;
-				
-				
 					
 				for( x = 0; x < _boardWidth; x++ )
 				{	
-			
-					_grid[x][y] = new Tile( engine, xOffset, yOffset );
+					var data:Object = { x:0, y:0 };
+					data.x = x;
+					data.y = y;
+					
+					_grid[x][y] = new Tile( engine, xOffset, yOffset, data );
 					
 					tile = _grid[x][y];
 					tile.ed.addEventListener( "Touched", function( event:Event ):void {
@@ -107,6 +108,10 @@ package
 					_grid[x][y].fsm.Fire( command );
 				}
 			}				
+		}
+		public function CommandTile( x:int, y:int, command:String ):void
+		{
+			_grid[x][y].fsm.Fire( command );							
 		}
 		public function GetTile( x:int, y:int ):Tile
 		{

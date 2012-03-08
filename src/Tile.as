@@ -1,8 +1,9 @@
 package
 {			
+	import flare.events.MouseEvent3D;
+	
 	import flash.events.Event;
-	import flash.events.EventDispatcher;
-	import flare.events.MouseEvent3D;	
+	import flash.events.EventDispatcher;	
 	
 	public class Tile extends StaticModel
 	{
@@ -17,7 +18,7 @@ package
 		public var ed:EventDispatcher = new EventDispatcher();
 		public var fsm:FiniteStateMachine;
 		
-		private var _data:Object = null;
+		private var _data:Object;
 		private var _open:Boolean = true;
 		private var _visited:int = 0;
 		private var _fade:int = 0;
@@ -121,10 +122,6 @@ package
 							me.SetTexture("Tile_Break5", engine );
 							// fire event
 							me.ed.dispatchEvent(new Event( "Touched", false));
-						},
-						onClear: function():Object
-						{
-							return fsm.States.Enable;
 						},
 						onReset: function():Object
 						{							
