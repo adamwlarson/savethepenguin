@@ -10,7 +10,7 @@ package
 		
 		public function Model()
 		{
-			
+				
 		}
 		
 		public function SetModel( src:String, engine:Engine ):void
@@ -29,7 +29,11 @@ package
 		}
 		
 		public function SetPosition( x:Number, y:Number, z:Number ):void
-		{
+		{/*
+			_obj.translateX(x);
+			_obj.translateY(y);
+			_obj.translateZ(z);
+			*/
 			_obj.x = x;
 			_obj.y = y;
 			_obj.z = z;

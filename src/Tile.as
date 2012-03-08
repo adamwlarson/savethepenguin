@@ -118,7 +118,7 @@ package
 						onStartUp: function():void // handler
 						{
 							me._open = false;
-							me._fade = 5;
+							me._fade = 6;
 							me.SetTexture("Tile_Break5", engine );
 							// fire event
 							me.ed.dispatchEvent(new Event( "Touched", false));
