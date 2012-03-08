@@ -2,8 +2,11 @@ package
 {
 	import flare.basic.*;
 	import flare.core.*;
+	import flare.core.Texture3D;
 	import flare.loaders.*;
 	import flare.materials.*;
+	import flare.materials.Shader3D;
+	import flare.materials.filters.TextureFilter;
 	import flare.system.*;
 	
 	import flash.display.*;
@@ -13,6 +16,7 @@ package
 	{
 		private var _scene:Scene3D; // Viewer3D for debug camera
 		private var _modelList:Array = new Array(); // hold all the loaded models
+		private var _textureList:Array = new Array(); // hold all the textures
 		
 		public function Engine()
 		{
@@ -36,16 +40,48 @@ package
 
 		}
 		
-		public function LoadModel( src:String ):void
+		public function LoadTexture( src:String , name:String ):void
+		{
+			var material:Shader3D = new Shader3D( name );
+			material.filters.push( new TextureFilter(new Texture3D( src ) ) );
+			material.build();
+			material.name;
+			_textureList[_textureList.length] = { material: material };// other load texture values go in this object
+			
+		}
+		
+		public function GetTexture( name:String ):Shader3D
+		{
+			var material:Shader3D;
+			if( _textureList.some( function( item:*, index:int, array:Array ):Boolean {
+				// search for texture by name
+				if( item.material.name == name )
+				{
+					material = item.material;
+					return true;
+				}
+				return false;
+			}) )
+			{
+				// material found
+				return material;
+			}
+			
+			// no texture found
+			return null;
+		}
+		
+		public function LoadModel( src:String, name:String ):void
 		{
 			
 			var model:Pivot3D = new Pivot3D( );
 			model = this.GetScene().addChildFromFile( src );
 			model.visible = false;
+			model.name = name;
 			_modelList[_modelList.length] = { model: model }; // other load model values go in this object
 		}
 		
-		public function GetClone( name:String ):Pivot3D
+		public function GetModel( name:String ):Pivot3D
 		{
 			var model:Pivot3D;
 			if( _modelList.some( function( item:*, index:int, array:Array ):Boolean {

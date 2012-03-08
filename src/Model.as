@@ -2,11 +2,7 @@ package
 {
 	import flare.core.Mesh3D;
 	import flare.core.Pivot3D;
-	import flare.core.Texture3D;
 	import flare.events.MouseEvent3D;
-	import flare.materials.Shader3D;
-	import flare.materials.filters.TextureFilter;
-	
 	
 	public class Model
 	{
@@ -14,12 +10,12 @@ package
 		
 		public function Model()
 		{
+			
 		}
 		
-		//Load the Mesh
-		public function GetModel( src:String, engine:Engine ):void
+		public function SetModel( src:String, engine:Engine ):void
 		{
-			_obj = engine.GetClone( src );			
+			_obj = engine.GetModel( src );			
 		}
 		
 		public function Hide( ):void
@@ -37,6 +33,19 @@ package
 			_obj.x = x;
 			_obj.y = y;
 			_obj.z = z;
+		}
+		
+		public function GetXPosition( ):Number
+		{
+			return _obj.x;
+		}
+		public function GetYPosition( ):Number
+		{
+			return _obj.y;
+		}
+		public function GetZPosition( ):Number
+		{
+			return _obj.z;
 		}
 		
 		public function SetRotation( x:Number, y:Number, z:Number ):void
@@ -77,12 +86,9 @@ package
 			}, Mesh3D );
 		}
 		
-		public function SetTexture( src:String ):void // for now we load the texture over and over again...
+		public function SetTexture( src:String, engine:Engine ):void
 		{
-			var material:Shader3D = new Shader3D( "mat");
-			material.filters.push( new TextureFilter(new Texture3D( src ) ) );
-			material.build();
-			_obj.setMaterial( material );
+			_obj.setMaterial( engine.GetTexture( src ) );
 		}
 	}
 }

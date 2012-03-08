@@ -16,7 +16,7 @@ package
 
 		public function Board( engine:Engine, h:int, w:int )
 		{
-			var radius:int = 55; // TODO find a way to get size from the model?
+			var radius:int = 56; // TODO find a way to get size from the model?
 			
 			_boardWidth = w;
 			_boardHeight = h;
@@ -33,7 +33,6 @@ package
 			var yOffset:int = startingY;
 			var x:int;
 			var y:int;
-			var data:Object = { x:0, y:0 };
 			
 			// hexagon offset
 			tileHeight -= radius - (0.5/*cos(60)*/*radius);
@@ -60,10 +59,8 @@ package
 					
 				for( x = 0; x < _boardWidth; x++ )
 				{	
-					data.x = x;
-					data.y = y;
-
-					_grid[x][y] = new Tile( engine, xOffset, yOffset, data );
+			
+					_grid[x][y] = new Tile( engine, xOffset, yOffset );
 					
 					tile = _grid[x][y];
 					tile.ed.addEventListener( "Touched", function( event:Event ):void {
@@ -111,6 +108,10 @@ package
 				}
 			}				
 		}
+		public function GetTile( x:int, y:int ):Tile
+		{
+			return _grid[x][y];
+		}
 		public function MakeRandomBoard( blocked:int ):void
 		{
 			var x:int;
@@ -148,7 +149,7 @@ package
 				tile = dirs[i];
 				if( tile != null && tile.isOpen() && tile.GetVisited() == -1 ) {
 					newList[newList.length] = tile;
-					dirs[i].visited = dist;
+					dirs[i].SetVisited( dist );
 				}
 			}
 		}
@@ -156,8 +157,8 @@ package
 		{
 			var dist:int = 1;
 			var index:int = 0;
-			var pathList:Array;
-			var newList:Array;
+			var pathList:Array = new Array();
+			var newList:Array = new Array();
 			
 			pathList[index] = startTile;
 			startTile.SetVisited( 0 );
@@ -173,7 +174,7 @@ package
 				while( index < pathList.length ) {
 					
 					startTile = pathList[index];
-					if( pathList[index].onCheckPath( endTile ) ) // end found
+					if( pathList[index].CheckNeighbors( endTile ) ) // end found
 					{
 						newList.splice( 0, newList.length );
 						break;
