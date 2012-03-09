@@ -33,7 +33,7 @@ package
 
 			_data = data; // tile specific data
 			SetModel( "TileModel", engine );			
-			SetPosition( xPos-14, 0, yPos-14 );	
+			SetPosition( xPos-14, -20, yPos-14 );	
 			
 			// handle mouse messages
 			AddMouseOverEvent( function ( event:MouseEvent3D ):void

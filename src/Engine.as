@@ -28,6 +28,24 @@ package
 			// creates a new 3d scene.
 			_scene = new Scene3D( container ); // Viewer3D for debug camera
 			_scene.antialias = 2;
+			
+			var xline:Lines3D = new Lines3D("x");
+			xline.lineStyle( 3, 0xff0000 );//red
+			var yline:Lines3D = new Lines3D("y");
+			yline.lineStyle( 3, 0x00ff00 );//green
+			var zline:Lines3D = new Lines3D("z");
+			zline.lineStyle( 3, 0x0000ff );//blue
+			
+			xline.moveTo(0, 0, 0);
+			xline.lineTo(100, 0, 0 );
+			yline.moveTo(0, 0, 0);
+			yline.lineTo(0, 100, 0 );
+			zline.moveTo(0, 0, 0);
+			zline.lineTo(0, 0, 100 );
+			
+			_scene.addChild( xline );
+			_scene.addChild( yline );
+			_scene.addChild( zline );
 		}
 		
 		public function GetScene( ):Scene3D // Viewer3D for debug camera

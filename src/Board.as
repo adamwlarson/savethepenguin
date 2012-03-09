@@ -57,11 +57,7 @@ package
 					
 				for( x = 0; x < _boardWidth; x++ )
 				{	
-					var data:Object = { x:0, y:0 };
-					data.x = x;
-					data.y = y;
-					
-					_grid[x][y] = new Tile( engine, xOffset, yOffset, data );
+					_grid[x][y] = new Tile( engine, xOffset, yOffset, {x:x, y:y} );
 					
 					tile = _grid[x][y];
 					tile.ed.addEventListener( "Touched", function( event:Event ):void {

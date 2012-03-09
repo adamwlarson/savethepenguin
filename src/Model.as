@@ -4,6 +4,8 @@ package
 	import flare.core.Pivot3D;
 	import flare.events.MouseEvent3D;
 	
+	import flash.events.Event;
+	
 	public class Model
 	{
 		protected var _obj:Pivot3D;
@@ -11,7 +13,7 @@ package
 		public function Model()
 		{
 				
-		}
+		}		
 		
 		public function SetModel( src:String, engine:Engine ):void
 		{
@@ -68,26 +70,29 @@ package
 		
 		public function AddMouseOverEvent( fun:Function ):void
 		{
-			_obj.forEach( function addEvent( mesh:Mesh3D ):void
+			_obj.children[0].addEventListener( MouseEvent3D.MOUSE_MOVE, fun );
+			/*_obj.forEach( function addEvent( mesh:Mesh3D ):void
 			{
-				mesh.addEventListener( MouseEvent3D.MOUSE_OVER, fun );
-			}, Mesh3D );			
+				mesh.addEventListener( MouseEvent3D.MOUSE_MOVE, fun );
+			}, Mesh3D );*/		
 		}
 				
 		public function AddMouseOutEvent( fun:Function ):void
 		{
-			_obj.forEach( function addEvent( mesh:Mesh3D ):void
+			_obj.children[0].addEventListener( MouseEvent3D.MOUSE_OUT, fun );
+			/*_obj.forEach( function addEvent( mesh:Mesh3D ):void
 			{
 				mesh.addEventListener( MouseEvent3D.MOUSE_OUT, fun );
-			}, Mesh3D );			
+			}, Mesh3D );*/			
 		}
 		
 		public function AddMouseClickEvent( fun:Function ):void
 		{
-			_obj.forEach( function addEvent( mesh:Mesh3D ):void
+			_obj.children[0].addEventListener( MouseEvent3D.CLICK, fun );
+			/*_obj.forEach( function addEvent( mesh:Mesh3D ):void
 			{
 				mesh.addEventListener( MouseEvent3D.CLICK, fun );
-			}, Mesh3D );
+			}, Mesh3D );*/
 		}
 		
 		public function SetTexture( src:String, engine:Engine ):void

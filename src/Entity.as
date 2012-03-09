@@ -2,64 +2,62 @@ package
 {
 	import flash.events.Event;
 	import flash.events.TimerEvent;
+	import flash.geom.Vector3D;
 	import flash.utils.Timer;
 	
 	public class Entity extends AnimatedModel
 	{
-		private var moveToCallBack:Function; // TODO roll this into a class
-		private var moveToX:Number;
-		private var moveToY:Number;
-		private var moveToZ:Number;
-		private var startX:Number;
-		private var startY:Number;
-		private var startZ:Number;
+		// tween values
+		private var moveToCallBack:Function; // TODO roll this into a tween class
 		private var tic:Timer;
-		private var step:Number;
+		private var step:Object = { x:0, y:0, z:0 };		
 		
-		public function Entity()
+		public function Entity( engine:Engine )
 		{
 			super();
-			tic = new Timer(30);			
+			tic = new Timer(10);	
+			tic.addEventListener(TimerEvent.TIMER, _Update);
+			tic.addEventListener(TimerEvent.TIMER_COMPLETE, _End);		
+			
 		}		
 		
-		public function MoveTo( x:Number, y:Number, z:Number, ms:Number=250, callback:Function=null ):void
+		// supports x, y, z translation, rotation
+		public function Tween( info:Object, ms:Number=1000, callback:Function=null ):void
 		{
-			moveToCallBack = callback;			
-			moveToX = x;
-			moveToY = y;
-			moveToZ = z;
+			if(tic.running)
+			{
+				tic.reset();
+			}
+			moveToCallBack = callback;
+			var percent:Number = 10/ms;
 			
-			startX = GetXPosition();
-			startY = GetYPosition();
-			startZ = GetZPosition();
-			
-			step = 10/ms;			
+			step.x = (info.hasOwnProperty("x"))? (info.x-GetXPosition())*percent:0;			
+			step.y = (info.hasOwnProperty("y"))? (info.y-GetYPosition())*percent:0;		
+			step.z = (info.hasOwnProperty("z"))? (info.z-GetZPosition())*percent:0;
 			tic.start();
-			tic.repeatCount = ms/10 + 1;
-			
-			tic.addEventListener(TimerEvent.TIMER, Update);
-			tic.addEventListener(TimerEvent.TIMER_COMPLETE, End);	
+			tic.repeatCount = ms/10;	
 			
 		}
-		public function Update( event:TimerEvent ):void
+		private function _Update( event:TimerEvent ):void
 		{
-			trace("update");
-			this.SetPosition(	startX+(moveToX-startX)*step*tic.currentCount,
-								startY+(moveToY-startY)*step*tic.currentCount,
-								startZ+(moveToZ-startZ)*step*tic.currentCount );
+			this.SetPosition(	GetXPosition()+step.x,
+								GetYPosition()+step.y,
+								GetZPosition()+step.z );
 			
 		}
-		public function End( event:TimerEvent ):void
+		private function _End( event:TimerEvent ):void
 		{
-			
-			this.SetPosition( moveToX, moveToY, moveToZ );
-			trace("end");
 			if(moveToCallBack!=null) moveToCallBack();
 			tic.reset();
-			tic.removeEventListener(TimerEvent.TIMER, Update);
-			tic.removeEventListener(TimerEvent.TIMER_COMPLETE, End);
+			
 		}
-		
+		public function SetLookAt( x:Number, y:Number, z:Number ):void
+		{
+			//trace( _obj.getDir( ) );
+			//trace( _obj.getRight( ) );
+			//trace( _obj.getUp( ) );
+			_obj.lookAt( x, y, z, _obj.getUp(), 1 );
+		}	
 		
 	}
 }
