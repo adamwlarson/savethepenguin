@@ -21,7 +21,7 @@ package
 			
 		}		
 		
-		// supports x, y, z translation, rotation
+		// supports x, y, z translation
 		public function Tween( info:Object, ms:Number=1000, callback:Function=null ):void
 		{
 			if(tic.running)
