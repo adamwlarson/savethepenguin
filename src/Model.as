@@ -3,6 +3,8 @@ package
 	import flare.core.Mesh3D;
 	import flare.core.Pivot3D;
 	import flare.events.MouseEvent3D;
+	import flare.materials.Material3D;
+	import flare.materials.Shader3D;
 	
 	import flash.events.Event;
 	

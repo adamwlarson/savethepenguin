@@ -16,7 +16,7 @@ package
 
 		public function Board( engine:Engine, h:int, w:int )
 		{
-			var radius:int = 56; // TODO find a way to get size from the model?
+			var radius:int = 53; // TODO find a way to get size from the model?
 			
 			_boardWidth = w;
 			_boardHeight = h;

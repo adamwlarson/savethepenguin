@@ -6,6 +6,10 @@ package
 	import flare.loaders.*;
 	import flare.materials.*;
 	import flare.materials.Shader3D;
+	import flare.materials.filters.AlphaMaskFilter;
+	import flare.materials.filters.EnvironmentFilter;
+	import flare.materials.filters.NormalMapFilter;
+	import flare.materials.filters.SpecularFilter;
 	import flare.materials.filters.TextureFilter;
 	import flare.system.*;
 	
@@ -16,7 +20,7 @@ package
 	{
 		private var _scene:Scene3D; // Viewer3D for debug camera
 		private var _modelList:Array = new Array(); // hold all the loaded models
-		private var _textureList:Array = new Array(); // hold all the textures
+		private var _shaderList:Array = new Array(); // hold all the textures
 		
 		public function Engine()
 		{
@@ -58,31 +62,52 @@ package
 
 		}
 		
-		public function LoadTexture( src:String , name:String ):void
+		public function LoadTexture( src:String, name:String ):void
 		{
-			var material:Shader3D = new Shader3D( name );
-			material.filters.push( new TextureFilter(new Texture3D( src ) ) );
-			material.build();
-			material.name;
-			_textureList[_textureList.length] = { material: material };// other load texture values go in this object
+			var shader:Shader3D = new Shader3D( name );
+			shader.filters.push( new TextureFilter(new Texture3D( src ) ) );
+			shader.build();
+			_shaderList[_shaderList.length] = { shader: shader };// other load texture values go in this object
 			
 		}
 		
-		public function GetTexture( name:String ):Shader3D
+		public function LoadNormalTexture( src:String, normal:String, name:String ):void
 		{
-			var material:Shader3D;
-			if( _textureList.some( function( item:*, index:int, array:Array ):Boolean {
+			var shader:Shader3D = new Shader3D(  name, null, false );
+			shader.filters.push( new TextureFilter(new Texture3D( src ) ) );
+		//	shader.filters.push( new NormalMapFilter(new Texture3D( normal ) ) );
+		//	shader.filters.push( new SpecularFilter( ) );
+			shader.build();
+			_shaderList[_shaderList.length] = { shader: shader };// other load texture values go in this object
+			
+		}
+		
+		public function LoadAlphaTexture( src:String, name:String, alpha:Number=1.0 ):void
+		{
+			var shader:Shader3D = new Shader3D( name, null, false );
+			shader.filters.push( new TextureFilter(new Texture3D( src ) ) );
+			shader.filters.push( new AlphaMaskFilter( alpha ) );
+			shader.twoSided = true;
+			shader.build();
+			_shaderList[_shaderList.length] = { shader: shader };// other load texture values go in this object
+		}
+		
+		public function GetTexture( name:String ):Material3D
+		{
+			var shader:Shader3D;
+			if( _shaderList.some( function( item:*, index:int, array:Array ):Boolean {
 				// search for texture by name
-				if( item.material.name == name )
+				if( item.shader.name == name )
 				{
-					material = item.material;
+					shader = item.shader;
 					return true;
 				}
 				return false;
 			}) )
 			{
 				// material found
-				return material;
+				var mat:Material3D = shader.clone();
+				return mat;
 			}
 			
 			// no texture found

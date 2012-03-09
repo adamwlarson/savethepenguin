@@ -8,12 +8,12 @@ package
 		public var currentTile:Tile;
 		public var fsm:FiniteStateMachine;
 		public var ed:EventDispatcher = new EventDispatcher();
-	
+		
 		public function Penguin( engine:Engine )
 		{
-			super( engine );			
+			super( engine );
 			
-			SetModel("Penguin", engine );	
+			SetModel("Penguin", engine );
 			SetScale(0.75,0.75,0.75);
 			AddAnimation("idle1", 0, 29 );
 			AddAnimation("idle2", 30, 89 );
@@ -29,103 +29,103 @@ package
 			AddAnimation("dive", 600, 639 );
 			
 			fsm = new FiniteStateMachine(
-			{
-				Init: // state
 				{
-					onStartUp: function():Object // handler
+					Init: // state
 					{
-						return fsm.States.Idle;
-					}
-				},
-				Idle:
-				{
-					onStartUp:function():void
-					{
-						_PlayAnimation("idle1", 4, false );
-					},
-					onAnimationDone:function():void
-					{
-						var ran:Number = Math.floor(Math.random( )*100 );
-						if( ran > 80 )
-							ran = Math.floor(Math.random( )*6 );
-						else
-							ran = 100;
-						
-						switch(ran)
+						onStartUp: function():Object // handler
 						{
-							case 0:
-								_PlayAnimation("idle2", 5, false );
-								break;
-							case 1:
-								_PlayAnimation("idle3", 5, false );
-								break;
-							case 2:
-								_PlayAnimation("idle4", 5, false );
-								break;
-							case 3:
-								_PlayAnimation("idle5", 5, false );
-								break;
-							case 4:
-								_PlayAnimation("idle6", 5, false );
-								break;
-							case 5:
-								_PlayAnimation("idle7", 5, false );
-								break;
-							case 6:
-								_PlayAnimation("idle8", 5, false );
-								break;
-							default:
-								_PlayAnimation("idle1", 5, false );
-								break;							
-						}						
+							return fsm.States.Idle;
+						}
 					},
-					onWalk:function():Object
+					Idle:
 					{
-						return fsm.States.Walk;
+						onStartUp:function():void
+						{
+							_PlayAnimation("idle1", 4, false );
+						},
+						onAnimationDone:function():void
+						{
+							var ran:Number = Math.floor(Math.random( )*100 );
+							if( ran > 80 )
+								ran = Math.floor(Math.random( )*6 );
+							else
+								ran = 100;
+							
+							switch(ran)
+							{
+								case 0:
+									_PlayAnimation("idle2", 5, false );
+									break;
+								case 1:
+									_PlayAnimation("idle3", 5, false );
+									break;
+								case 2:
+									_PlayAnimation("idle4", 5, false );
+									break;
+								case 3:
+									_PlayAnimation("idle5", 5, false );
+									break;
+								case 4:
+									_PlayAnimation("idle6", 5, false );
+									break;
+								case 5:
+									_PlayAnimation("idle7", 5, false );
+									break;
+								case 6:
+									_PlayAnimation("idle8", 5, false );
+									break;
+								default:
+									_PlayAnimation("idle1", 5, false );
+									break;
+							}
+						},
+						onWalk:function():Object
+						{
+							return fsm.States.Walk;
+						},
+						onDive:function():Object
+						{
+							return fsm.States.Dive;
+						},
+						onLose:function():Object
+						{
+							return fsm.States.Lose;
+						}
 					},
-					onDive:function():Object
+					Walk:
 					{
-						return fsm.States.Dive;
+						onStartUp:function():void
+						{
+							_PlayAnimation("walk", 4, true );
+						},
+						onAnimationDone:function():Object
+						{
+							return fsm.States.Idle;
+						}
 					},
-					onLose:function():Object
+					Dive:
 					{
-						return fsm.States.Lose;
+						onStartUp:function():void
+						{
+							_PlayAnimation("dive", 0, false );
+						},
+						onAnimationDone:function():Object
+						{
+							return fsm.States.Idle;
+						}
+					},
+					Lose:
+					{
+						onStartUp:function():void
+						{
+							_PlayAnimation("idle8", 0, false );
+						},
+						onAnimationDone:function():Object
+						{
+							return fsm.States.Idle;
+						}
 					}
-				},
-				Walk:
-				{
-					onStartUp:function():void
-					{
-						_PlayAnimation("walk", 4, true );
-					},
-					onAnimationDone:function():Object
-					{
-						return fsm.States.Idle;
-					}
-				},
-				Dive:
-				{
-					onStartUp:function():void
-					{
-						_PlayAnimation("dive", 0, false );
-					},
-					onAnimationDone:function():Object
-					{
-						return fsm.States.Idle;
-					}
-				},
-				Lose:
-				{
-					onStartUp:function():void
-					{
-						_PlayAnimation("idle8", 0, false );
-					},
-					onAnimationDone:function():Object
-					{
-						return fsm.States.Idle;
-					}
-				}
-			});	
+				});
 			
 			fsm.Start();
 		}
@@ -140,7 +140,7 @@ package
 				if(callback!=null)callback();
 				_AnimationComplete( null );
 				
-			});			
+			});
 		}
 		
 		private function _MoveToDone( ):void

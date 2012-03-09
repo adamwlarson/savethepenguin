@@ -32,24 +32,10 @@ package
 			_count++; // debug count for tiles
 
 			_data = data; // tile specific data
-			SetModel( "TileModel", engine );			
+			SetModel( "TileModel", engine );	
 			SetPosition( xPos-14, -20, yPos-14 );	
 			
-			// handle mouse messages
-			AddMouseOverEvent( function ( event:MouseEvent3D ):void
-			{
-				fsm.Fire("onMouseOver");
-			});					
-			AddMouseOutEvent( function( event:MouseEvent3D ):void
-			{
-				fsm.Fire("onMouseOut");				
-			});			
-			AddMouseClickEvent( function( event:MouseEvent3D ):void
-			{
-				fsm.Fire("onMouseClick");	
-			});
-			
-			var me:Tile = this;
+			//var me:Tile = this;
 			// state machine
 			fsm = new FiniteStateMachine(
 				{
@@ -57,9 +43,8 @@ package
 					{
 						onStartUp: function():Object // handler
 						{
-							me.SetTexture("Tile_Normal", engine );
-							me._visited = -1;
-							me._open = true;
+							SetTexture("Tile_Normal", engine );
+							_open = true;
 							return fsm.States.Enable;
 						}
 					},
@@ -67,15 +52,15 @@ package
 					{
 						onStartUp: function():void // handler
 						{
-							me._visited = -1;
+							_visited = -1;
 						},
 						onMouseOut: function():void
 						{
-							me.SetTexture("Tile_Normal", engine );
+							SetTexture("Tile_Normal", engine );
 						},
 						onMouseOver: function():void
 						{
-							me.SetTexture("Tile_Select", engine );
+							SetTexture("Tile_Select", engine );
 						},
 						onMouseClick: function():Object
 						{
@@ -117,11 +102,11 @@ package
 					{
 						onStartUp: function():void // handler
 						{
-							me._open = false;
-							me._fade = 6;
-							me.SetTexture("Tile_Break5", engine );
+							_open = false;
+							_fade = 6;
+							SetTexture("Tile_Break5", engine );
 							// fire event
-							me.ed.dispatchEvent(new Event( "Touched", false));
+							ed.dispatchEvent(new Event( "Touched", false));
 						},
 						onReset: function():Object
 						{							
@@ -129,21 +114,21 @@ package
 						},
 						onFade: function():Object
 						{
-							if( me._fade > 0 )
+							if( _fade > 0 )
 							{
 								switch( _fade-- )
 								{
 									case 4:
-										me.SetTexture("Tile_Break4", engine );
+										SetTexture("Tile_Break4", engine );
 										return null;
 									case 3:
-										me.SetTexture("Tile_Break3", engine );
+										SetTexture("Tile_Break3", engine );
 										return null;
 									case 2:
-										me.SetTexture("Tile_Break2", engine );
+										SetTexture("Tile_Break2", engine );
 										return null;
 									case 1:
-										me.SetTexture("Tile_Break1", engine );
+										SetTexture("Tile_Break1", engine );
 										return null;
 									default://5,6
 										return null;										
@@ -154,8 +139,8 @@ package
 						},
 						onExit: function():void
 						{
-							me.SetTexture("Tile_Normal", engine );
-							me._open = true;
+							SetTexture("Tile_Normal", engine );
+							_open = true;
 						}
 						
 					},
@@ -163,8 +148,8 @@ package
 					{
 						onStartUp: function():void // handler
 						{
-							me._open = false;
-							me.SetTexture("Tile_Blocked", engine );							
+							_open = false;
+							SetTexture("Tile_Blocked", engine );							
 						},
 						onReset: function():Object
 						{
@@ -172,10 +157,24 @@ package
 						},
 						onExit: function():void
 						{
-							me._open = true;
+							_open = true;
 						}
 					}
-				});			
+				});	
+			
+			// handle mouse messages
+			AddMouseOverEvent( function ( event:MouseEvent3D ):void
+			{
+				fsm.Fire("onMouseOver");
+			});					
+			AddMouseOutEvent( function( event:MouseEvent3D ):void
+			{
+				fsm.Fire("onMouseOut");				
+			});			
+			AddMouseClickEvent( function( event:MouseEvent3D ):void
+			{
+				fsm.Fire("onMouseClick");	
+			});
 
 			fsm.Start();
 			//trace( _count );			
