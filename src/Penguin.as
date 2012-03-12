@@ -1,5 +1,7 @@
 package
 {
+
+	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	
@@ -27,6 +29,7 @@ package
 			AddAnimation("walk", 500, 529 );
 			AddAnimation("run", 550, 564 );
 			AddAnimation("dive", 600, 639 );
+			_obj.setLayer(10);
 			
 			fsm = new FiniteStateMachine(
 				{
@@ -136,16 +139,10 @@ package
 			SetLookAt( x, 0, z );
 			Tween( {x:x, z:z}, 250, function():void
 			{
-				//SetLookAt( 0, 0, -500 );
 				if(callback!=null)callback();
 				_AnimationComplete( null );
 				
 			});
-		}
-		
-		private function _MoveToDone( ):void
-		{
-			
 		}
 		
 		protected override function _AnimationComplete( e:Event ):void

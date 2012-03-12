@@ -6,6 +6,7 @@ package
 	import flare.loaders.*;
 	import flare.materials.*;
 	import flare.materials.Shader3D;
+	import flare.materials.filters.*;
 	import flare.materials.filters.AlphaMaskFilter;
 	import flare.materials.filters.EnvironmentFilter;
 	import flare.materials.filters.NormalMapFilter;
@@ -32,6 +33,7 @@ package
 			// creates a new 3d scene.
 			_scene = new Scene3D( container ); // Viewer3D for debug camera
 			_scene.antialias = 2;
+			_scene.setLayerSortMode(10, Scene3D.SORT_BACK_TO_FRONT);
 			
 			var xline:Lines3D = new Lines3D("x");
 			xline.lineStyle( 3, 0xff0000 );//red
@@ -73,10 +75,13 @@ package
 		
 		public function LoadNormalTexture( src:String, normal:String, name:String ):void
 		{
-			var shader:Shader3D = new Shader3D(  name, null, false );
+			var shader:Shader3D = new Shader3D(  name, null, false);
 			shader.filters.push( new TextureFilter(new Texture3D( src ) ) );
-		//	shader.filters.push( new NormalMapFilter(new Texture3D( normal ) ) );
-		//	shader.filters.push( new SpecularFilter( ) );
+			//shader.filters.push( new NormalMapFilter(new Texture3D( normal ) ) );
+			//shader.filters.push( new SpecularFilter( ) );
+			//shader.filters.push( new EnvironmentFilter( new Texture3D( "http://wiki.flare3d.com/demos/resources/reflections.jpg" ), BlendMode.MULTIPLY, 1.5 ) );
+			//shader.filters[1].repeatX = 4;
+			//shader.filters[1].repeatY = 4;
 			shader.build();
 			_shaderList[_shaderList.length] = { shader: shader };// other load texture values go in this object
 			
@@ -84,11 +89,11 @@ package
 		
 		public function LoadAlphaTexture( src:String, name:String, alpha:Number=1.0 ):void
 		{
-			var shader:Shader3D = new Shader3D( name, null, false );
+			var shader:Shader3D = new Shader3D( name, null, false, Shader3D.VERTEX_SKIN );
 			shader.filters.push( new TextureFilter(new Texture3D( src ) ) );
 			shader.filters.push( new AlphaMaskFilter( alpha ) );
-			shader.twoSided = true;
 			shader.build();
+			shader.twoSided = true;
 			_shaderList[_shaderList.length] = { shader: shader };// other load texture values go in this object
 		}
 		

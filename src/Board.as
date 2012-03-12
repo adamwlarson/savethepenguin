@@ -37,9 +37,9 @@ package
 			// hexagon offset
 			tileHeight -= radius - (0.5/*cos(60)*/*radius);
 			
-			/*tileHeight+=2; // boarder around tiles
+			tileHeight+=2; // boarder around tiles
 			halfWidth+=1;
-			tileWidth+=2;*/
+			tileWidth+=2;
 			
 			// make the grid
 			_grid = new Array();			
@@ -111,6 +111,8 @@ package
 		}
 		public function GetTile( x:int, y:int ):Tile
 		{
+			if( x >= _boardWidth ) x = _boardWidth-1;
+			if( y >= _boardHeight ) y = _boardHeight-1;
 			return _grid[x][y];
 		}
 		public function MakeRandomBoard( blocked:int ):void

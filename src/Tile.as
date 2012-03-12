@@ -32,7 +32,8 @@ package
 			_count++; // debug count for tiles
 
 			_data = data; // tile specific data
-			SetModel( "TileModel", engine );	
+			SetModel( "TileModel", engine );
+			_obj.setLayer(10);
 			SetPosition( xPos-14, -20, yPos-14 );	
 			
 			//var me:Tile = this;
