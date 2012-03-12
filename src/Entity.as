@@ -53,9 +53,6 @@ package
 		}
 		public function SetLookAt( x:Number, y:Number, z:Number ):void
 		{
-			//trace( _obj.getDir( ) );
-			//trace( _obj.getRight( ) );
-			//trace( _obj.getUp( ) );
 			_obj.lookAt( x, y, z, _obj.getUp(), 1 );
 		}	
 		

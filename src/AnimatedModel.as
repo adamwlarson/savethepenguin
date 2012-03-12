@@ -31,7 +31,7 @@ package
 			//_obj.play();
 			//_obj.stop();
 			//_obj.children[0].removeEventListener(Pivot3D.ANIMATION_COMPLETE_EVENT, _AnimationComplete);
-			_obj.gotoAndPlay( src, blend );// , ( loop )? Pivot3D.ANIMATION_LOOP_MODE:Pivot3D.ANIMATION_STOP_MODE );
+			_obj.gotoAndPlay( src, blend);//, ( loop )? Pivot3D.ANIMATION_LOOP_MODE:Pivot3D.ANIMATION_STOP_MODE );
 			
 			_obj.children[0].addEventListener(Pivot3D.ANIMATION_COMPLETE_EVENT, _AnimationComplete);
 		}

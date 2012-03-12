@@ -33,10 +33,9 @@ package
 
 			_data = data; // tile specific data
 			SetModel( "TileModel", engine );
-			_obj.setLayer(10);
+			_obj.setLayer(0);
 			SetPosition( xPos-14, -20, yPos-14 );	
 			
-			//var me:Tile = this;
 			// state machine
 			fsm = new FiniteStateMachine(
 				{

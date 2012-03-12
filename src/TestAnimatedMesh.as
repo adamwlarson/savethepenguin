@@ -33,7 +33,7 @@ package
 			_testModel.SetModel("model", _engine );
 			
 			_testModel.AddAnimation("Walk", 30, 48, true );
-			_testModel.PlayAnimation("Walk", 0);
+			//_testModel.PlayAnimation("Walk", 0);
 			
 			DoneLoading();
 		}

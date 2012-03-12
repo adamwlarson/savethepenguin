@@ -29,7 +29,7 @@ package
 			AddAnimation("walk", 500, 529 );
 			AddAnimation("run", 550, 564 );
 			AddAnimation("dive", 600, 639 );
-			_obj.setLayer(10);
+			_obj.setLayer(0);
 			
 			fsm = new FiniteStateMachine(
 				{
@@ -44,7 +44,7 @@ package
 					{
 						onStartUp:function():void
 						{
-							_PlayAnimation("idle1", 4, false );
+							_PlayAnimation("idle1", 5, false );
 						},
 						onAnimationDone:function():void
 						{
@@ -147,7 +147,7 @@ package
 		
 		protected override function _AnimationComplete( e:Event ):void
 		{
-			//trace("animation done");
+			trace("animation done");
 			fsm.Fire("onAnimationDone");
 			ed.dispatchEvent( new Event("AnimationDone") );
 			
