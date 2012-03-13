@@ -68,29 +68,26 @@ package
 		
 		public function AddMouseOverEvent( fun:Function ):void
 		{
-			_obj.children[0].addEventListener( MouseEvent3D.MOUSE_MOVE, fun );
-			/*_obj.forEach( function addEvent( mesh:Mesh3D ):void
+			_obj.forEach( function addEvent( mesh:Mesh3D ):void
 			{
 				mesh.addEventListener( MouseEvent3D.MOUSE_MOVE, fun );
-			}, Mesh3D );*/		
+			}, Mesh3D );		
 		}
 				
 		public function AddMouseOutEvent( fun:Function ):void
 		{
-			_obj.children[0].addEventListener( MouseEvent3D.MOUSE_OUT, fun );
-			/*_obj.forEach( function addEvent( mesh:Mesh3D ):void
+			_obj.forEach( function addEvent( mesh:Mesh3D ):void
 			{
 				mesh.addEventListener( MouseEvent3D.MOUSE_OUT, fun );
-			}, Mesh3D );*/			
+			}, Mesh3D );			
 		}
 		
 		public function AddMouseClickEvent( fun:Function ):void
 		{
-			_obj.children[0].addEventListener( MouseEvent3D.CLICK, fun );
-			/*_obj.forEach( function addEvent( mesh:Mesh3D ):void
+			_obj.forEach( function addEvent( mesh:Mesh3D ):void
 			{
 				mesh.addEventListener( MouseEvent3D.CLICK, fun );
-			}, Mesh3D );*/
+			}, Mesh3D );
 		}
 		
 		public function SetTexture( src:String, engine:Engine ):void

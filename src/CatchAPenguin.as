@@ -40,8 +40,8 @@ package
 					onStartUp: function():void // handler
 					{
 						//Create a new scene pass in the engine
-						//_level = new GameLevel( );
-						_level = new KillerLevel( );
+						_level = new GameLevel( );
+						//_level = new KillerLevel( );
 						_level.Initialize(_engine);
 					}
 				}

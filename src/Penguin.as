@@ -16,20 +16,22 @@ package
 			super( engine );
 			
 			SetModel("Penguin", engine );
-			SetScale(0.75,0.75,0.75);
-			AddAnimation("idle1", 0, 29 );
-			AddAnimation("idle2", 30, 89 );
-			AddAnimation("idle3", 90, 149 );
-			AddAnimation("idle4", 150, 209 );
-			AddAnimation("idle5", 210, 279 );
-			AddAnimation("idle6", 280, 339 );
-			AddAnimation("idle7", 440, 399 );
-			AddAnimation("idle8", 400, 459 );
+			SetScale(0.75,0.75,0.75);			
+			AddAnimation("idle1", 1, 30 );
+			AddAnimation("idle2", 50, 90 );
+			AddAnimation("idle3", 110, 150 );
+			AddAnimation("idle4", 170, 210 );
+			AddAnimation("idle5", 240, 280 );
+			AddAnimation("idle6", 300, 340 );
+			AddAnimation("idle7", 360, 380 );
+			AddAnimation("idle8", 420, 460 );
 			
-			AddAnimation("walk", 500, 529 );
-			AddAnimation("run", 550, 564 );
-			AddAnimation("dive", 600, 639 );
+			AddAnimation("walk", 500, 530 );
+			AddAnimation("run", 550, 565 );
+			AddAnimation("dive", 600, 638 );
 			_obj.setLayer(0);
+			_obj.children[2].setLayer( 10 );// shadow
+			_obj.children[2].animationEnabled = false;
 			
 			fsm = new FiniteStateMachine(
 				{
@@ -44,11 +46,12 @@ package
 					{
 						onStartUp:function():void
 						{
-							_PlayAnimation("idle1", 5, false );
+							_PlayAnimation("idle1", 10, false );
 						},
 						onAnimationDone:function():void
 						{
-							var ran:Number = Math.floor(Math.random( )*100 );
+							
+						/*	var ran:Number = Math.floor(Math.random( )*100 );
 							if( ran > 80 )
 								ran = Math.floor(Math.random( )*6 );
 							else
@@ -57,30 +60,30 @@ package
 							switch(ran)
 							{
 								case 0:
-									_PlayAnimation("idle2", 5, false );
+									_PlayAnimation("idle2",10, false );
 									break;
 								case 1:
-									_PlayAnimation("idle3", 5, false );
+									_PlayAnimation("idle3",10, false );
 									break;
 								case 2:
-									_PlayAnimation("idle4", 5, false );
+									_PlayAnimation("idle4",10, false );
 									break;
 								case 3:
-									_PlayAnimation("idle5", 5, false );
+									_PlayAnimation("idle5", 10, false );
 									break;
 								case 4:
-									_PlayAnimation("idle6", 5, false );
+									_PlayAnimation("idle6", 10, false );
 									break;
 								case 5:
-									_PlayAnimation("idle7", 5, false );
+									_PlayAnimation("idle7", 10, false );
 									break;
 								case 6:
-									_PlayAnimation("idle8", 5, false );
+									_PlayAnimation("idle8", 10, false );
 									break;
 								default:
-									_PlayAnimation("idle1", 5, false );
+									_PlayAnimation("idle1",10, false );
 									break;
-							}
+							}*/
 						},
 						onWalk:function():Object
 						{
@@ -147,6 +150,7 @@ package
 		
 		protected override function _AnimationComplete( e:Event ):void
 		{
+			//_obj.stop();
 			trace("animation done");
 			fsm.Fire("onAnimationDone");
 			ed.dispatchEvent( new Event("AnimationDone") );
