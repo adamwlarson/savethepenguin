@@ -7,7 +7,7 @@ package
 	import flash.display.Sprite;
 	import flash.events.Event;
 	
-	[SWF(frameRate=60, width=800, height=600)]
+	[SWF(frameRate=30, width=640, height=480)]
 	public class CatchAPenguin extends Base
 	{
 		private var _engine:Engine;
@@ -30,7 +30,7 @@ package
 					{
 						//Create a new engine
 						_engine = new Engine();
-						_engine.Initialize(me, 800, 600);
+						_engine.Initialize(me, 320, 240);
 						
 						return fsm.States.Loading;
 					}
@@ -41,6 +41,7 @@ package
 					{
 						//Create a new scene pass in the engine
 						_level = new GameLevel( );
+						//_level = new KillerLevel( );
 						_level.Initialize(_engine);
 					}
 				}
