@@ -20,8 +20,8 @@ package
 			_testModel = new AnimatedModel( );
 			
 			engine.SetLoadedCallback( Loaded );
-			engine.LoadModel("Assets/model.f3d");
-			engine.LoadModel("Assets/TilePiece01.f3d");
+			engine.LoadModel("Assets/model.f3d", "model");
+			
 			
 		}
 		
@@ -30,10 +30,10 @@ package
 		{
 			trace( "Success Loading" );
 			
-			_testModel.GetModel("model.f3d", _engine );
+			_testModel.SetModel("model", _engine );
 			
 			_testModel.AddAnimation("Walk", 30, 48, true );
-			_testModel.PlayAnimation("Walk", 0);
+			//_testModel.PlayAnimation("Walk", 0);
 			
 			DoneLoading();
 		}

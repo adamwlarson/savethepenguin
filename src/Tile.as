@@ -1,60 +1,49 @@
 package
 {			
-	import flash.events.Event;
-	import flash.events.EventDispatcher;
-	import flare.events.MouseEvent3D;	
+	import flare.events.MouseEvent3D;
 	
-	public class Tile
+	import flash.events.Event;
+	import flash.events.EventDispatcher;	
+	
+	public class Tile extends StaticModel
 	{
 		static private var _count:int = 0; // debug
 		
-		public var northWest:Tile = null; // TODO make gets for these public directions
+		public var northWest:Tile = null;
 		public var northEast:Tile = null;
 		public var east:Tile = null;
 		public var southEast:Tile = null;
 		public var southWest:Tile = null;
 		public var west:Tile = null;
-		public var ed:EventDispatcher = new EventDispatcher(); // TODO make public wrapper function, not the best way?
-		public var fsm:FiniteStateMachine;// TODO not the best way? should this be pulic
+		public var ed:EventDispatcher = new EventDispatcher();
+		public var fsm:FiniteStateMachine;
 		
-		private var _data:Object = null;
+		private var _data:Object;
 		private var _open:Boolean = true;
 		private var _visited:int = 0;
+		private var _fade:int = 0;
 		
-		private var _model:StaticModel = new StaticModel();		
+		//private var _model:StaticModel = new StaticModel();		
 		
 		public function Tile( engine:Engine, xPos:int, yPos:int, data:Object=null )
 		{
+			super();
+			
 			_count++; // debug count for tiles
-						
-			_model.GetModel( "TilePiece01.f3d", engine );			
-			_model.SetPosition( xPos, 0, yPos );	
+
+			_data = data; // tile specific data
+			SetModel( "TileModel", engine );
+			_obj.setLayer(0);
+			SetPosition( xPos-14, -20, yPos-14 );	
 			
-			_model.AddMouseOverEvent( function ( event:MouseEvent3D ):void
-			{
-				fsm.Fire("onMouseOver");
-			});
-					
-			_model.AddMouseOutEvent( function( event:MouseEvent3D ):void
-			{
-				fsm.Fire("onMouseOut");				
-			});
-			
-			_model.AddMouseClickEvent( function( event:MouseEvent3D ):void
-			{
-				fsm.Fire("onMouseClick");	
-			});
-			
-			_data = data; // tile specific data, TODO move directional data here
-			
+			// state machine
 			fsm = new FiniteStateMachine(
 				{
 					Init: // state
 					{
 						onStartUp: function():Object // handler
 						{
-							_model.SetTexture("Assets/IcePiece.jpg");
-							_visited = 0;
+							SetTexture("Tile_Normal", engine );
 							_open = true;
 							return fsm.States.Enable;
 						}
@@ -63,20 +52,18 @@ package
 					{
 						onStartUp: function():void // handler
 						{
-							
+							_visited = -1;
 						},
 						onMouseOut: function():void
 						{
-							_model.SetTexture("Assets/IcePiece.jpg");							
+							SetTexture("Tile_Normal", engine );
 						},
 						onMouseOver: function():void
 						{
-							_model.SetTexture("Assets/Tile_Select.jpg");
+							SetTexture("Tile_Select", engine );
 						},
 						onMouseClick: function():Object
 						{
-							// fire event
-							ed.dispatchEvent(new Event( "Touched", false));
 							return fsm.States.TileUsed;
 						},
 						onDisable: function():Object
@@ -86,6 +73,10 @@ package
 						onReset: function():Object
 						{
 							return fsm.States.Init;
+						},
+						onTileUsed: function():Object
+						{
+							return fsm.States.TileUsed;
 						},
 						onBlocked: function():Object
 						{
@@ -112,19 +103,44 @@ package
 						onStartUp: function():void // handler
 						{
 							_open = false;
-							_model.SetTexture("Assets/Tile_break_Lv5.jpg");
-						},
-						onClear: function():Object
-						{
-							return fsm.States.Enable;
+							_fade = 6;
+							SetTexture("Tile_Break5", engine );
+							// fire event
+							ed.dispatchEvent(new Event( "Touched", false));
 						},
 						onReset: function():Object
-						{
+						{							
 							return fsm.States.Init;
 						},
-						onFade: function():void
+						onFade: function():Object
 						{
-							_model.SetTexture("Assets/Tile_break_Lv1.jpg");
+							if( _fade > 0 )
+							{
+								switch( _fade-- )
+								{
+									case 4:
+										SetTexture("Tile_Break4", engine );
+										return null;
+									case 3:
+										SetTexture("Tile_Break3", engine );
+										return null;
+									case 2:
+										SetTexture("Tile_Break2", engine );
+										return null;
+									case 1:
+										SetTexture("Tile_Break1", engine );
+										return null;
+									default://5,6
+										return null;										
+								}
+							}
+							
+							return fsm.States.Enable;					
+						},
+						onExit: function():void
+						{
+							SetTexture("Tile_Normal", engine );
+							_open = true;
 						}
 						
 					},
@@ -133,19 +149,32 @@ package
 						onStartUp: function():void // handler
 						{
 							_open = false;
-							_model.SetTexture("Assets/Tile_Block.jpg");
-							
-						},
-						onClear: function():Object
-						{
-							return fsm.States.Enable;
+							SetTexture("Tile_Blocked", engine );							
 						},
 						onReset: function():Object
 						{
 							return fsm.States.Init;
+						},
+						onExit: function():void
+						{
+							_open = true;
 						}
 					}
-				});			
+				});	
+			
+			// handle mouse messages
+			AddMouseOverEvent( function ( event:MouseEvent3D ):void
+			{
+				fsm.Fire("onMouseOver");
+			});					
+			AddMouseOutEvent( function( event:MouseEvent3D ):void
+			{
+				fsm.Fire("onMouseOut");				
+			});			
+			AddMouseClickEvent( function( event:MouseEvent3D ):void
+			{
+				fsm.Fire("onMouseClick");	
+			});
 
 			fsm.Start();
 			//trace( _count );			

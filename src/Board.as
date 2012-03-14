@@ -16,7 +16,7 @@ package
 
 		public function Board( engine:Engine, h:int, w:int )
 		{
-			var radius:int = 55; // TODO find a way to get size from the model?
+			var radius:int = 53; // TODO find a way to get size from the model?
 			
 			_boardWidth = w;
 			_boardHeight = h;
@@ -33,14 +33,13 @@ package
 			var yOffset:int = startingY;
 			var x:int;
 			var y:int;
-			var data:Object = { x:0, y:0 };
 			
 			// hexagon offset
 			tileHeight -= radius - (0.5/*cos(60)*/*radius);
 			
-			/*tileHeight+=2; // boarder around tiles
+			tileHeight+=2; // boarder around tiles
 			halfWidth+=1;
-			tileWidth+=2;*/
+			tileWidth+=2;
 			
 			// make the grid
 			_grid = new Array();			
@@ -55,15 +54,10 @@ package
 			{
 				xOffset = startingX;
 				xOffset += (y%2)? halfWidth:0;
-				
-				
 					
 				for( x = 0; x < _boardWidth; x++ )
 				{	
-					data.x = x;
-					data.y = y;
-
-					_grid[x][y] = new Tile( engine, xOffset, yOffset, data );
+					_grid[x][y] = new Tile( engine, xOffset, yOffset, {x:x, y:y} );
 					
 					tile = _grid[x][y];
 					tile.ed.addEventListener( "Touched", function( event:Event ):void {
@@ -111,6 +105,16 @@ package
 				}
 			}				
 		}
+		public function CommandTile( x:int, y:int, command:String ):void
+		{
+			_grid[x][y].fsm.Fire( command );							
+		}
+		public function GetTile( x:int, y:int ):Tile
+		{
+			if( x >= _boardWidth ) x = _boardWidth-1;
+			if( y >= _boardHeight ) y = _boardHeight-1;
+			return _grid[x][y];
+		}
 		public function MakeRandomBoard( blocked:int ):void
 		{
 			var x:int;
@@ -148,7 +152,7 @@ package
 				tile = dirs[i];
 				if( tile != null && tile.isOpen() && tile.GetVisited() == -1 ) {
 					newList[newList.length] = tile;
-					dirs[i].visited = dist;
+					dirs[i].SetVisited( dist );
 				}
 			}
 		}
@@ -156,8 +160,8 @@ package
 		{
 			var dist:int = 1;
 			var index:int = 0;
-			var pathList:Array;
-			var newList:Array;
+			var pathList:Array = new Array();
+			var newList:Array = new Array();
 			
 			pathList[index] = startTile;
 			startTile.SetVisited( 0 );
@@ -173,7 +177,7 @@ package
 				while( index < pathList.length ) {
 					
 					startTile = pathList[index];
-					if( pathList[index].onCheckPath( endTile ) ) // end found
+					if( pathList[index].CheckNeighbors( endTile ) ) // end found
 					{
 						newList.splice( 0, newList.length );
 						break;
